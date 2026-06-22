@@ -1,5 +1,6 @@
 import { useI18n } from '../../i18n/useI18n';
 import { useStore } from '../../store/useStore';
+import { Tip } from '../primitives';
 import type { AutonomyLevel } from '../../lib/types';
 import s from './shell.module.css';
 
@@ -29,10 +30,17 @@ export function TrustLedgerPanel() {
         <div className={s.railSection} style={{ marginBottom: 'var(--sp-2)' }}>{t('trust.level')}</div>
         <div className={s.ladder}>
           {levels.map((l) => (
-            <button key={l} className={`${s.rung} ${autonomy === l ? s.rungActive : ''}`} onClick={() => setAutonomy(l)}>
-              <span className={s.rungNum}>L{l}</span>
-              <span className={s.rungLabel}>{t(`trust.l${l}`)}</span>
-            </button>
+            <Tip key={l} text={t(`trust.l${l}.desc`)} side="left">
+              <button
+                className={`${s.rung} ${autonomy === l ? s.rungActive : ''}`}
+                style={{ width: '100%' }}
+                aria-pressed={autonomy === l}
+                onClick={() => { setAutonomy(l); pushToast(`${t('toast.autonomy')} L${l} · ${t(`trust.l${l}`)}`); }}
+              >
+                <span className={s.rungNum}>L{l}</span>
+                <span className={s.rungLabel}>{t(`trust.l${l}`)}</span>
+              </button>
+            </Tip>
           ))}
         </div>
         <div className={s.rungDesc}>{t(`trust.l${autonomy}.desc`)}</div>
@@ -48,8 +56,12 @@ export function TrustLedgerPanel() {
               <span className={s.ledgerLabel}>{e.outbound && '🔒 '}{e.label}</span>
               <span className={s.ledgerDetail}>{e.detail}</span>
               <div className={s.ledgerRow}>
-                <button className={s.undoLink} onClick={() => { approveLedger(e.id); pushToast(t('trust.approved')); }}>{t('common.approve')}</button>
-                <button className={s.undoLink} style={{ color: 'var(--text-faint)' }} onClick={() => { undoLedger(e.id); pushToast(t('common.undo')); }}>{t('common.reject')}</button>
+                <Tip text={t('tip.approve')} side="top">
+                  <button className={s.undoLink} onClick={() => { approveLedger(e.id); pushToast(t('trust.approved')); }}>{t('common.approve')}</button>
+                </Tip>
+                <Tip text={t('tip.reject')} side="top">
+                  <button className={s.undoLink} style={{ color: 'var(--text-faint)' }} onClick={() => { undoLedger(e.id); pushToast(t('common.undo')); }}>{t('common.reject')}</button>
+                </Tip>
               </div>
             </div>
           ))}
@@ -72,7 +84,9 @@ export function TrustLedgerPanel() {
               <div className={s.ledgerRow}>
                 <span className={s.ledgerTime}>{e.time}</span>
                 {e.status !== 'undone' && (
-                  <button className={s.undoLink} onClick={() => { undoLedger(e.id); pushToast(`${t('common.undo')}: ${e.label}`); }}>↺ {t('common.undo')}</button>
+                  <Tip text={t('tip.undo')} side="top">
+                    <button className={s.undoLink} onClick={() => { undoLedger(e.id); pushToast(`${t('common.undo')}: ${e.label}`); }}>↺ {t('common.undo')}</button>
+                  </Tip>
                 )}
               </div>
             </div>

@@ -40,6 +40,7 @@ export function SentimentTrend({ data, onPick }: { data: SeriesPoint[]; onPick?:
       <path d={line} fill="none" stroke="var(--accent)" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" />
       {data.map((p, i) => (
         <g key={p.label}>
+          <title>{p.label}: {p.value} — click to read the mentions behind it</title>
           <circle className={c.point} cx={xy[i][0]} cy={xy[i][1]} r={3.6} fill="var(--accent)" stroke="var(--surface)" strokeWidth={1.5} onClick={() => onPick?.(p)} />
           <circle className={c.pointHit} cx={xy[i][0]} cy={xy[i][1]} r={14} onClick={() => onPick?.(p)} />
           <text className={c.axisLabel} x={xy[i][0]} y={H - 6} textAnchor="middle">{p.label}</text>
@@ -67,6 +68,7 @@ export function BarSeries({ data, onPick, unit = '' }: { data: SeriesPoint[]; on
         const y = pad.t + ih - bh;
         return (
           <g key={p.label} onClick={() => onPick?.(p)}>
+            <title>{p.label}: {p.value}{unit} — click to read the mentions behind it</title>
             <rect className={c.barTrack} x={x} y={pad.t} width={bw} height={ih} rx={4} />
             <rect className={c.bar} x={x} y={y} width={bw} height={bh} rx={4} fill="var(--accent)" />
             <text className={c.valueLabel} x={x + bw / 2} y={y - 4} textAnchor="middle">{p.value}{unit}</text>
@@ -89,7 +91,7 @@ export function ShareOfVoice({ data, onPick }: { data: CompetitorShare[]; onPick
             <span className={c.dot} style={{ background: d.isUs ? 'var(--accent)' : 'var(--neu)' }} />
             <strong style={{ fontWeight: d.isUs ? 700 : 500 }}>{d.name}</strong>
           </span>
-          <span className={c.sovBarWrap} onClick={() => onPick?.(d)} role="button" tabIndex={0}>
+          <span className={c.sovBarWrap} onClick={() => onPick?.(d)} role="button" tabIndex={0} title={`${d.name}: ${d.share}%${onPick ? ' — click to read the mentions behind it' : ''}`} aria-label={`${d.name}: ${d.share}%`}>
             <span
               className={c.sovBar}
               style={{ width: `${(d.share / max) * 100}%`, background: d.isUs ? 'var(--accent)' : 'var(--border-strong)' }}

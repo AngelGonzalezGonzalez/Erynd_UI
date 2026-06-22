@@ -24,6 +24,9 @@ export function CommandMenu() {
         <motion.div className={s.cmdScrim} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={close}>
           <motion.div
             className={s.cmd}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t('shell.search')}
             initial={{ opacity: 0, y: -10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8 }}
@@ -34,6 +37,7 @@ export function CommandMenu() {
               autoFocus
               className={s.cmdInput}
               placeholder={t('shell.commandHint')}
+              aria-label={t('shell.search')}
               value={q}
               onChange={(e) => setQ(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') ask(); if (e.key === 'Escape') close(); }}

@@ -2,7 +2,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useI18n } from '../../i18n/useI18n';
 import { useStore } from '../../store/useStore';
 import { usage, team } from '../../data/mockData';
-import { Button, Avatar, Pill, fmt } from '../primitives';
+import { Button, Avatar, Pill, Tip, fmt } from '../primitives';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
 import s from './shell.module.css';
 import a from '../artifacts/artifacts.module.css';
 
@@ -27,6 +28,7 @@ export function Settings() {
   const toggleTheme = useStore((st) => st.toggleTheme);
   const locale = useStore((st) => st.locale);
   const setLocale = useStore((st) => st.setLocale);
+  const upgrade = useAsyncAction(() => {}, { successToast: t('toast.upgrade'), minMs: 700 });
 
   return (
     <AnimatePresence>
@@ -37,6 +39,9 @@ export function Settings() {
             <motion.div
               className={s.overlayCard}
               style={{ width: 'min(680px, 100%)' }}
+              role="dialog"
+              aria-modal="true"
+              aria-label={t('set.title')}
               initial={{ opacity: 0, scale: 0.97, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.98 }}
@@ -46,7 +51,9 @@ export function Settings() {
                 <span className={s.overlayGlyph}>⚙</span>
                 <span className={s.overlayTitle}>{t('set.title')}</span>
                 <span style={{ flex: 1 }} />
-                <button className={s.iconBtn} style={{ color: 'var(--text)' }} onClick={() => setSettings(false)}>✕</button>
+                <Tip text={t('tip.close')} side="bottom">
+                  <button className={s.iconBtn} style={{ color: 'var(--text)' }} onClick={() => setSettings(false)} aria-label={t('common.close')}>✕</button>
+                </Tip>
               </div>
               <div className={s.overlayBody}>
                 <div className={s.settingsGrid}>
@@ -59,7 +66,9 @@ export function Settings() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)', marginTop: 'var(--sp-3)' }}>
                       <span style={{ color: 'var(--sev-high)', fontSize: 'var(--fs-xs)' }}>⚠ {t('set.near')}</span>
-                      <Button size="sm" variant="primary">{t('set.upgrade')}</Button>
+                      <Tip text={t('tip.upgrade')} side="top">
+                        <Button size="sm" variant="primary" loading={upgrade.loading} onClick={upgrade.run}>{t('set.upgrade')}</Button>
+                      </Tip>
                     </div>
                   </div>
 
@@ -68,13 +77,21 @@ export function Settings() {
                       <div className={a.sectionLabel}>{t('set.appearance')}</div>
                       <div className={a.label}>{t('shell.theme')}</div>
                       <div className={s.themeRow}>
-                        <button className={`${s.themeOpt} ${theme === 'dark' ? s.themeOptOn : ''}`} onClick={() => theme !== 'dark' && toggleTheme()}>☾ Dark</button>
-                        <button className={`${s.themeOpt} ${theme === 'light' ? s.themeOptOn : ''}`} onClick={() => theme !== 'light' && toggleTheme()}>☀ Light</button>
+                        <Tip text={t('tip.themeToDark')} side="top" style={{ flex: 1 }}>
+                          <button className={`${s.themeOpt} ${theme === 'dark' ? s.themeOptOn : ''}`} style={{ width: '100%' }} aria-pressed={theme === 'dark'} onClick={() => theme !== 'dark' && toggleTheme()}>☾ Dark</button>
+                        </Tip>
+                        <Tip text={t('tip.themeToLight')} side="top" style={{ flex: 1 }}>
+                          <button className={`${s.themeOpt} ${theme === 'light' ? s.themeOptOn : ''}`} style={{ width: '100%' }} aria-pressed={theme === 'light'} onClick={() => theme !== 'light' && toggleTheme()}>☀ Light</button>
+                        </Tip>
                       </div>
                       <div className={a.label} style={{ marginTop: 'var(--sp-3)' }}>{t('shell.language')}</div>
                       <div className={s.themeRow}>
-                        <button className={`${s.themeOpt} ${locale === 'en' ? s.themeOptOn : ''}`} onClick={() => setLocale('en')}>English</button>
-                        <button className={`${s.themeOpt} ${locale === 'es' ? s.themeOptOn : ''}`} onClick={() => setLocale('es')}>Español</button>
+                        <Tip text={t('tip.lang')} side="top" style={{ flex: 1 }}>
+                          <button className={`${s.themeOpt} ${locale === 'en' ? s.themeOptOn : ''}`} style={{ width: '100%' }} aria-pressed={locale === 'en'} onClick={() => setLocale('en')}>English</button>
+                        </Tip>
+                        <Tip text={t('tip.lang')} side="top" style={{ flex: 1 }}>
+                          <button className={`${s.themeOpt} ${locale === 'es' ? s.themeOptOn : ''}`} style={{ width: '100%' }} aria-pressed={locale === 'es'} onClick={() => setLocale('es')}>Español</button>
+                        </Tip>
                       </div>
                     </div>
 

@@ -1,6 +1,7 @@
 import { useI18n } from '../../i18n/useI18n';
 import { useStore } from '../../store/useStore';
-import { Aperture, Button } from '../primitives';
+import { Aperture, Button, Tip } from '../primitives';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
 import { ArtifactFrame } from './ArtifactFrame';
 import { artifactForKind } from '../../data/assistant';
 import type { ChatMessage } from '../../lib/types';
@@ -11,6 +12,23 @@ export function Message({ msg }: { msg: ChatMessage }) {
   const pushAssistant = useStore((s) => s.pushAssistant);
   const addLedger = useStore((s) => s.addLedger);
   const pushToast = useStore((s) => s.pushToast);
+
+  // Accept a proposed action — brief processing, then log + render the artifact.
+  const accept = useAsyncAction(
+    () => {
+      if (!msg.proposal) return;
+      const led = addLedger({
+        kind: msg.proposal.outbound ? 'queued' : 'drafted',
+        label: msg.proposal.actionLabel,
+        detail: t(msg.proposal.title),
+        outbound: msg.proposal.outbound,
+        status: msg.proposal.outbound ? 'pending_approval' : 'done',
+      });
+      pushToast(msg.proposal.actionLabel, led);
+      pushAssistant({ artifact: artifactForKind(msg.proposal.kind, msg.proposal.title) });
+    },
+    { minMs: 700 }
+  );
 
   if (msg.author === 'user') {
     return (
@@ -33,19 +51,6 @@ export function Message({ msg }: { msg: ChatMessage }) {
 
   const text = msg.textKey ? t(msg.textKey) : msg.text;
 
-  const acceptProposal = () => {
-    if (!msg.proposal) return;
-    const led = addLedger({
-      kind: msg.proposal.outbound ? 'queued' : 'drafted',
-      label: msg.proposal.actionLabel,
-      detail: t(msg.proposal.title),
-      outbound: msg.proposal.outbound,
-      status: msg.proposal.outbound ? 'pending_approval' : 'done',
-    });
-    pushToast(msg.proposal.actionLabel, led);
-    pushAssistant({ artifact: artifactForKind(msg.proposal.kind, msg.proposal.title) });
-  };
-
   return (
     <div className={`${c.msg} ${c.assistant}`}>
       <div className={c.assistantHead}>
@@ -59,7 +64,9 @@ export function Message({ msg }: { msg: ChatMessage }) {
           <span className={c.proposalText}>
             {msg.proposal.outbound ? `🔒 ${t('trust.gateNote')}` : t('trust.l1.desc')}
           </span>
-          <Button variant="accent" size="sm" onClick={acceptProposal}>{msg.proposal.actionLabel}</Button>
+          <Tip text={t('tip.acceptProposal')} side="top">
+            <Button variant="accent" size="sm" loading={accept.loading} onClick={accept.run}>{msg.proposal.actionLabel}</Button>
+          </Tip>
         </div>
       )}
     </div>

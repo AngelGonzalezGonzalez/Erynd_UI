@@ -35,6 +35,22 @@
   color: var(--shell-text); background: var(--shell-hover); cursor: pointer;
 }
 
+/* notifications popover */
+.notifWrap { position: relative; display: inline-flex; }
+.popScrim { position: fixed; inset: 0; z-index: 40; }
+.notifPop {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 41; width: 296px;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border-strong);
+  border-radius: var(--r-lg); box-shadow: var(--elev-2); padding: var(--sp-3); overflow: hidden;
+}
+.notifHead { font-family: var(--mono); font-size: var(--fs-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); padding: var(--sp-1) var(--sp-2) var(--sp-2); }
+.notifEmpty { font-size: var(--fs-xs); color: var(--text-muted); line-height: 1.5; padding: var(--sp-2); }
+.notifItem { display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-2); border-radius: var(--r-sm); }
+.notifItem:hover { background: var(--hover); }
+.notifLabel { flex: 1; min-width: 0; font-size: var(--fs-sm); display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.notifDot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); flex: 0 0 auto; }
+.notifTime { font-family: var(--mono); font-size: 0.6rem; color: var(--text-faint); flex: 0 0 auto; }
+
 /* ---- Main grid ---- */
 .main { flex: 1; min-height: 0; display: grid; grid-template-columns: var(--lw, 286px) 1fr var(--rw, 300px); position: relative; }
 .center { min-width: 0; min-height: 0; position: relative; overflow: hidden; }

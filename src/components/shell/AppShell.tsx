@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { useI18n } from '../../i18n/useI18n';
 import { useStore } from '../../store/useStore';
 import { Conversation } from '../chat/Conversation';
 import { TopBar } from './TopBar';
@@ -12,6 +13,7 @@ import { Settings } from './Settings';
 import s from './shell.module.css';
 
 export function AppShell() {
+  const { t } = useI18n();
   const leftOpen = useStore((st) => st.leftOpen);
   const rightOpen = useStore((st) => st.rightOpen);
   const setLeft = useStore((st) => st.setLeft);
@@ -20,6 +22,10 @@ export function AppShell() {
   const commandOpen = useStore((st) => st.commandOpen);
   const closeSurface = useStore((st) => st.closeSurface);
   const closeEvidence = useStore((st) => st.closeEvidence);
+  const setSettings = useStore((st) => st.setSettings);
+  const expanded = useStore((st) => st.expanded);
+  const evidence = useStore((st) => st.evidence);
+  const settingsOpen = useStore((st) => st.settingsOpen);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -31,11 +37,28 @@ export function AppShell() {
         setCommand(false);
         closeSurface();
         closeEvidence();
+        setSettings(false);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [commandOpen, setCommand, closeSurface, closeEvidence]);
+  }, [commandOpen, setCommand, closeSurface, closeEvidence, setSettings]);
+
+  // A11y: when an overlay closes, return focus to the control that opened it.
+  const anyOverlay = !!expanded || !!evidence || commandOpen || settingsOpen;
+  const anyOverlayRef = useRef(anyOverlay);
+  const lastFocus = useRef<HTMLElement | null>(null);
+  useEffect(() => { anyOverlayRef.current = anyOverlay; }, [anyOverlay]);
+  useEffect(() => {
+    const onFocusIn = (e: FocusEvent) => { if (!anyOverlayRef.current) lastFocus.current = e.target as HTMLElement; };
+    document.addEventListener('focusin', onFocusIn);
+    return () => document.removeEventListener('focusin', onFocusIn);
+  }, []);
+  useEffect(() => {
+    if (!anyOverlay && lastFocus.current && document.contains(lastFocus.current)) {
+      lastFocus.current.focus({ preventScroll: true });
+    }
+  }, [anyOverlay]);
 
   return (
     <div className={s.shell}>
@@ -63,18 +86,18 @@ export function AppShell() {
           </aside>
         )}
 
-        {/* desktop collapse / reopen handles */}
+        {/* desktop collapse / reopen handles (absolutely positioned — native title) */}
         {!leftOpen && (
-          <button className={`${s.collapseBtn} ${s.collapseLeft}`} onClick={() => setLeft(true)} aria-label="Open watching rail">›</button>
+          <button className={`${s.collapseBtn} ${s.collapseLeft}`} onClick={() => setLeft(true)} aria-label={t('shell.watching')} title={t('tip.menuLeft')}>›</button>
         )}
         {leftOpen && (
-          <button className={`${s.collapseBtn} ${s.collapseLeft}`} style={{ left: 'var(--lw)' }} onClick={() => setLeft(false)} aria-label="Collapse">‹</button>
+          <button className={`${s.collapseBtn} ${s.collapseLeft}`} style={{ left: 'var(--lw)' }} onClick={() => setLeft(false)} aria-label={t('common.collapse')} title={t('common.collapse')}>‹</button>
         )}
         {!rightOpen && (
-          <button className={`${s.collapseBtn} ${s.collapseRight}`} onClick={() => setRight(true)} aria-label="Open trust ledger">‹</button>
+          <button className={`${s.collapseBtn} ${s.collapseRight}`} onClick={() => setRight(true)} aria-label={t('shell.trust')} title={t('tip.menuRight')}>‹</button>
         )}
         {rightOpen && (
-          <button className={`${s.collapseBtn} ${s.collapseRight}`} style={{ right: 'var(--rw)' }} onClick={() => setRight(false)} aria-label="Collapse">›</button>
+          <button className={`${s.collapseBtn} ${s.collapseRight}`} style={{ right: 'var(--rw)' }} onClick={() => setRight(false)} aria-label={t('common.collapse')} title={t('common.collapse')}>›</button>
         )}
 
         {/* mobile sheet scrim */}

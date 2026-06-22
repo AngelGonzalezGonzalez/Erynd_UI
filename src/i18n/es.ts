@@ -265,4 +265,111 @@ export const es: Record<DictKey, string> = {
   'state.errorTitle': 'Eso no se completó',
   'state.errorBody': 'Algo interrumpió la solicitud. Tus datos están a salvo.',
   'state.emptyTitle': 'Aún no hay nada aquí',
+
+  // Tooltips y feedback — shell
+  'tip.menuLeft': 'Muestra lo que ERYND observa',
+  'tip.menuRight': 'Muestra el registro de confianza — aprobaciones y deshacer',
+  'tip.search': 'Busca superficies o pregunta — ⌘K',
+  'tip.role': 'Cambia de rol — analista, PR, dirección',
+  'tip.lang': 'Cambia el idioma — English / Español',
+  'tip.themeToDark': 'Cambiar a oscuro',
+  'tip.themeToLight': 'Cambiar a claro',
+  'tip.notifications': 'Señales y actividad recientes',
+  'tip.settings': 'Ajustes, plan y equipo',
+  'toast.role': 'Ahora ves como',
+  'toast.themeDark': 'Cambiado a oscuro',
+  'toast.themeLight': 'Cambiado a claro',
+  'toast.autonomy': 'Autonomía fijada en',
+  'lang.en': 'English',
+  'lang.es': 'Español',
+  'notif.title': 'Actividad reciente',
+  'notif.empty': 'Todo en calma. Las señales nuevas y la actividad del asistente aparecen aquí.',
+
+  // Tooltips — observación y registro
+  'tip.watchItem': 'Abre este monitor en Búsqueda',
+  'tip.open': 'Abrir',
+  'tip.addSearch': 'Crea una nueva búsqueda y alerta',
+  'tip.approve': 'Aprobar — esto se enviará',
+  'tip.reject': 'Rechazar y descartar',
+  'tip.undo': 'Deshacer esta acción',
+
+  // Tooltips — redactor y chat
+  'tip.promptChip': 'Enviar esta sugerencia',
+  'tip.send': 'Enviar · Intro',
+  'tip.sendEmpty': 'Escribe un mensaje para enviar',
+  'tip.sendBusy': 'Un momento — ERYND está respondiendo',
+  'composer.hint': 'Intro para enviar · Mayús+Intro para salto de línea',
+  'tip.acceptProposal': 'Aprobar — ERYND lo redactará',
+
+  // Tooltips — marco de artefacto
+  'tip.expand': 'Abrir superficie completa',
+  'tip.close': 'Cerrar · Esc',
+  'tip.statePreview': 'Previsualiza este estado',
+
+  // Tooltips y toasts — analítica
+  'tip.lens': 'Mostrar esta lente',
+  'tip.exportPdf': 'Exporta esta vista como PDF con tu marca',
+  'tip.exportCsv': 'Exporta los datos como CSV',
+  'tip.viewEvidence': 'Abre las menciones subyacentes',
+  'toast.exported': 'Informe listo — guardado en tus exportaciones',
+  'toast.exportedCsv': 'CSV exportado',
+
+  // Tooltips y toasts — borrador de respuesta
+  'tip.angle': 'Cambiar enfoque',
+  'resp.editHint': 'Edita libremente — las puntuaciones se actualizan',
+  'tip.publish': 'Aprueba y enruta a publicación — lo saliente está protegido',
+  'tip.pitch': 'Aprueba y enruta a una propuesta a medios',
+  'tip.regen': 'Restablece el borrador original',
+  'toast.regen': 'Borrador restablecido al original',
+  'tip.clarity': 'Qué tan claro se lee el mensaje',
+  'tip.tone': 'Qué tan bien coincide con tu voz de marca',
+  'tip.predicted': 'Respuesta estimada de la audiencia',
+
+  // Tooltips y toasts — tablero
+  'tip.kanCard': 'Arrastra para mover, o haz clic para ver el detalle',
+  'toast.moved': 'Movido a',
+  'tip.closeDetail': 'Cerrar',
+
+  // Tooltips y toasts — búsqueda
+  'tip.mode': 'Cambiar modo',
+  'tip.aiDraft': 'Genera una consulta desde tu descripción',
+  'tip.queryEdit': 'Edita la consulta — la validamos en vivo',
+  'tip.filter': 'Filtrar resultados',
+  'tip.saveSearch': 'Guarda esta búsqueda y alerta',
+  'tip.saveInvalid': 'Corrige la consulta antes de guardar',
+  'toast.queryDrafted': 'Consulta redactada desde tu descripción',
+
+  // Tooltips y toasts — relaciones con medios
+  'tip.journalist': 'Selecciona para redactar una propuesta',
+  'tip.pitchStart': 'Iniciar una propuesta',
+  'crm.optedOut': 'no acepta propuestas',
+  'tip.pitchSend': 'Encola para aprobación — lo saliente está protegido',
+  'tip.pitchCancel': 'Descarta esta propuesta',
+  'crm.bodyHint': 'Personalizado por IA — edítalo antes de enviar',
+  'toast.pitchQueued': 'Propuesta encolada para aprobación',
+
+  // Tooltips y toasts — publicación social
+  'tip.postTo': 'Publicar en',
+  'tip.aiAssist': 'Deja que ERYND afine el texto',
+  'tip.hashtags': 'Sugiere hashtags relevantes',
+  'tip.schedule': 'Encola para aprobación a la mejor hora',
+  'tip.publishNow': 'Publicar de inmediato',
+  'tip.composeDisabled': 'Elige una plataforma y respeta el límite',
+  'toast.copyTightened': 'Texto afinado por el asistente',
+  'toast.hashtags': 'Hashtags añadidos',
+
+  // Tooltips y toasts — ROI y ajustes
+  'tip.linkedActions': 'Muestra las acciones tras este ROI',
+  'tip.buildBoard': 'Genera un informe para el consejo',
+  'toast.boardBuilt': 'Informe directivo programado',
+  'tip.upgrade': 'Revisa planes y complementos',
+  'toast.upgrade': 'Los planes se abren en facturación',
+
+  // Tooltips y toasts — briefing y detalle de alerta
+  'tip.investigate': 'Abre el detalle de la alerta',
+  'tip.assign': 'Asigna con un SLA de 4 horas',
+  'toast.assigned': 'Asignado · SLA de 4 h iniciado',
+  'tip.warnEscalate': 'Redacta una respuesta ahora',
+  'tip.warnMonitor': 'Sigue observando — regístralo sin escalar',
+  'tip.warnNoise': 'Marca como ruido y deja de rastrear',
 };

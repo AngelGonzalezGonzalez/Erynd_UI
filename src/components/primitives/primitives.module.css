@@ -116,6 +116,26 @@
   box-shadow: var(--elev-2); z-index: 50; pointer-events: none;
 }
 
+/* Tip — hover/focus instructional bubble for any control */
+.tipWrap { position: relative; display: inline-flex; }
+.tipBubble {
+  position: absolute; width: max-content; max-width: 240px;
+  background: var(--surface-3); color: var(--text);
+  border: 1px solid var(--border-strong); border-radius: var(--r-sm);
+  padding: 0.5em 0.7em; font-size: var(--fs-xs); line-height: 1.45; font-weight: 450;
+  box-shadow: var(--elev-2); z-index: 300; pointer-events: none;
+  animation: tipIn 0.12s var(--ease);
+}
+.tip_top { bottom: calc(100% + 7px); left: 50%; transform: translateX(-50%); }
+.tip_bottom { top: calc(100% + 7px); left: 50%; transform: translateX(-50%); }
+.tip_left { right: calc(100% + 7px); top: 50%; transform: translateY(-50%); }
+.tip_right { left: calc(100% + 7px); top: 50%; transform: translateY(-50%); }
+@keyframes tipIn { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .tipBubble { animation: none; } }
+
+/* inline spinner inside a button */
+.btnSpin { flex: 0 0 auto; }
+
 .avatar {
   display: inline-flex; align-items: center; justify-content: center;
   border-radius: 50%; font-family: var(--sans-display); font-weight: 680;
