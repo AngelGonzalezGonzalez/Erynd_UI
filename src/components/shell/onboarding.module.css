@@ -1,0 +1,15 @@
+.wrap { height: 100vh; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--sp-5); overflow-y: auto; }
+.inner { width: min(560px, 100%); display: flex; flex-direction: column; gap: var(--sp-5); }
+.top { display: flex; align-items: center; gap: var(--sp-2); color: var(--accent); }
+.word { font-family: var(--sans-display); font-weight: 700; letter-spacing: 0.16em; color: var(--text); }
+.greet { font-family: var(--sans-display); font-weight: 680; font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -0.028em; line-height: 1.05; }
+.greet .em { color: var(--accent); font-family: var(--serif); font-style: italic; font-weight: 400; }
+.intro { color: var(--text-muted); font-size: var(--fs-body); line-height: 1.6; max-width: 48ch; }
+.stepDots { display: flex; gap: 6px; }
+.dot { width: 22px; height: 3px; border-radius: 100px; background: var(--border); }
+.dotOn { background: var(--accent); }
+.q { font-size: var(--fs-body); font-weight: 500; }
+.row { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+.foot { display: flex; align-items: center; gap: var(--sp-3); }
+.skip { background: none; border: none; color: var(--text-faint); font-size: var(--fs-sm); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.seeding { display: flex; align-items: center; gap: var(--sp-3); color: var(--text-muted); }

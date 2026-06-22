@@ -1,0 +1,171 @@
+/* ===================================================================
+   ERYND Intelligence — token system.
+   Ported from the ERYND landing (oxblood-dominant editorial system),
+   re-expressed for a data-dense product: the oxblood SHELL is constant
+   brand chrome in both themes; the working CANVAS + surfaces switch
+   dark<->light so dense tables stay legible for all-day use.
+   All values tokenized — no raw hex in components.
+   =================================================================== */
+
+:root {
+  /* ---- Raw brand palette (theme-independent) ---- */
+  --oxblood: #4c030f;
+  --oxblood-hi: #5e0a18;
+  --oxblood-lo: #2a0207;
+  --cream: #f4eee4;
+  --cream-card: #f8f2e7;
+  --ink: #1a0a0d;
+  --accent-red: #7a1322;
+  --teal: #2bb0c0;
+
+  /* ---- Type families (the real ERYND stack) ---- */
+  --sans-display: 'Schibsted Grotesk', 'Inter', system-ui, sans-serif;
+  --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* ---- Type scale (app density) ---- */
+  --fs-display: clamp(1.9rem, 3vw, 2.7rem);
+  --fs-h1: clamp(1.5rem, 2.2vw, 2rem);
+  --fs-h2: 1.3rem;
+  --fs-h3: 1.05rem;
+  --fs-body: 0.9375rem;
+  --fs-sm: 0.84rem;
+  --fs-xs: 0.76rem;
+  --fs-mono: 0.72rem;
+
+  /* ---- Radii (brand: pill CTAs, soft cards) ---- */
+  --r-pill: 100px;
+  --r-xl: 24px;
+  --r-lg: 18px;
+  --r-md: 13px;
+  --r-sm: 9px;
+  --r-xs: 6px;
+
+  /* ---- Spacing rhythm ---- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 22px;
+  --sp-6: 30px;
+  --sp-7: 42px;
+  --sp-8: 60px;
+
+  --maxw: 1320px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 0.42s;
+  --dur-fast: 0.2s;
+
+  /* ---- Constant SHELL chrome (oxblood identity band, both themes) ---- */
+  --shell-bg: radial-gradient(135% 130% at 85% -20%, var(--oxblood-hi) 0%, var(--oxblood) 48%, var(--oxblood-lo) 100%);
+  --shell-solid: var(--oxblood);
+  --shell-text: var(--cream);
+  --shell-muted: rgba(244, 238, 228, 0.62);
+  --shell-faint: rgba(244, 238, 228, 0.4);
+  --shell-border: rgba(244, 238, 228, 0.16);
+  --shell-hover: rgba(244, 238, 228, 0.09);
+  --shell-glass: rgba(42, 2, 7, 0.55);
+}
+
+/* =================== DARK (default) =================== */
+:root,
+[data-theme='dark'] {
+  --app-bg: radial-gradient(125% 120% at 84% -15%, #2a0b12 0%, #1a070c 46%, #120508 100%);
+  --canvas: #160a0d;
+  --surface: #1e0e12;
+  --surface-2: #261319;
+  --surface-3: #2f1820;
+  --field-bg: #130a0d;
+  --hover: rgba(244, 238, 228, 0.06);
+  --active: rgba(244, 238, 228, 0.1);
+
+  --text: #f4eee4;
+  --text-muted: rgba(244, 238, 228, 0.66);
+  --text-faint: rgba(244, 238, 228, 0.42);
+  --border: rgba(244, 238, 228, 0.13);
+  --border-strong: rgba(244, 238, 228, 0.24);
+
+  --accent: #3fc4d4; /* teal, lifted for dark contrast */
+  --accent-ink: #06222a;
+  --accent-soft: rgba(63, 196, 212, 0.16);
+  --brand: #ff5d6e; /* oxblood, lifted to read as a hot signal on dark */
+  --brand-soft: rgba(255, 93, 110, 0.15);
+
+  /* primary action = cream on dark (brand inversion) */
+  --btn-primary-bg: var(--cream);
+  --btn-primary-text: var(--ink);
+
+  --focus: #6fd8e6;
+
+  /* severity / sentiment — calm, paired with icons in components */
+  --sev-critical: #ff6b78;
+  --sev-critical-bg: rgba(255, 107, 120, 0.14);
+  --sev-high: #f5a35a;
+  --sev-high-bg: rgba(245, 163, 90, 0.14);
+  --sev-medium: #e7c66b;
+  --sev-medium-bg: rgba(231, 198, 107, 0.13);
+  --sev-low: #8ea0ab;
+  --sev-low-bg: rgba(142, 160, 171, 0.13);
+  --pos: #5fd0a8;
+  --pos-bg: rgba(95, 208, 168, 0.14);
+  --neg: #ff6b78;
+  --neg-bg: rgba(255, 107, 120, 0.13);
+  --neu: #9aa7b0;
+  --neu-bg: rgba(154, 167, 176, 0.12);
+
+  --elev-1: 0 1px 0 rgba(244, 238, 228, 0.05) inset, 0 8px 30px -12px rgba(0, 0, 0, 0.6);
+  --elev-2: 0 1px 0 rgba(244, 238, 228, 0.07) inset, 0 22px 60px -22px rgba(0, 0, 0, 0.7);
+  --grain-opacity: 0.045;
+  --scrim: rgba(8, 3, 5, 0.66);
+}
+
+/* =================== LIGHT =================== */
+[data-theme='light'] {
+  --app-bg: radial-gradient(120% 120% at 88% -10%, #fbf6ec 0%, #f4eee4 50%, #ece3d4 100%);
+  --canvas: #f6f0e6;
+  --surface: #fffdf8;
+  --surface-2: #f8f2e7;
+  --surface-3: #f1e9da;
+  --field-bg: #fffdf8;
+  --hover: rgba(26, 10, 13, 0.04);
+  --active: rgba(26, 10, 13, 0.07);
+
+  --text: #1a0a0d;
+  --text-muted: rgba(26, 10, 13, 0.64);
+  --text-faint: rgba(26, 10, 13, 0.45);
+  --border: rgba(26, 10, 13, 0.12);
+  --border-strong: rgba(26, 10, 13, 0.22);
+
+  --accent: #0f8b9b; /* teal, deepened for light contrast */
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(15, 139, 155, 0.12);
+  --brand: #8c0f1f; /* oxblood as the hot signal on light */
+  --brand-soft: rgba(140, 15, 31, 0.1);
+
+  --btn-primary-bg: var(--oxblood);
+  --btn-primary-text: var(--cream);
+
+  --focus: #0f8b9b;
+
+  --sev-critical: #b21f2d;
+  --sev-critical-bg: rgba(178, 31, 45, 0.1);
+  --sev-high: #b9651a;
+  --sev-high-bg: rgba(185, 101, 26, 0.1);
+  --sev-medium: #97781b;
+  --sev-medium-bg: rgba(151, 120, 27, 0.1);
+  --sev-low: #5d6b74;
+  --sev-low-bg: rgba(93, 107, 116, 0.1);
+  --pos: #1d8a63;
+  --pos-bg: rgba(29, 138, 99, 0.1);
+  --neg: #b21f2d;
+  --neg-bg: rgba(178, 31, 45, 0.09);
+  --neu: #5d6b74;
+  --neu-bg: rgba(93, 107, 116, 0.09);
+
+  --elev-1: 0 1px 2px rgba(26, 10, 13, 0.05), 0 8px 24px -14px rgba(26, 10, 13, 0.18);
+  --elev-2: 0 2px 4px rgba(26, 10, 13, 0.06), 0 24px 50px -24px rgba(26, 10, 13, 0.24);
+  --grain-opacity: 0.03;
+  --scrim: rgba(26, 10, 13, 0.42);
+}

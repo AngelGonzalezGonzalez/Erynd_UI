@@ -1,0 +1,25 @@
+.spark { display: block; width: 100%; height: auto; overflow: visible; }
+.chart { display: block; width: 100%; height: auto; overflow: visible; }
+
+.axisLabel { font-family: var(--mono); font-size: 9px; fill: var(--text-faint); letter-spacing: 0.04em; }
+.valueLabel { font-family: var(--mono); font-size: 9px; fill: var(--text-muted); }
+
+.point { cursor: pointer; transition: r 0.15s var(--ease); }
+.point:hover { r: 6; }
+.pointHit { cursor: pointer; fill: transparent; }
+
+.bar { transition: opacity 0.15s var(--ease); cursor: pointer; }
+.bar:hover { opacity: 0.82; }
+.barTrack { fill: var(--hover); }
+
+.sovRow { display: flex; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-3); }
+.sovName { width: 84px; flex: 0 0 auto; font-size: var(--fs-sm); display: flex; align-items: center; gap: 0.4em; }
+.sovBarWrap { flex: 1; height: 26px; background: var(--hover); border-radius: var(--r-sm); overflow: hidden; position: relative; cursor: pointer; }
+.sovBar { height: 100%; border-radius: var(--r-sm); transition: width 0.6s var(--ease); display: flex; align-items: center; }
+.sovPct { width: 64px; text-align: right; font-family: var(--mono); font-size: var(--fs-sm); }
+.dot { width: 9px; height: 9px; border-radius: 2px; flex: 0 0 auto; }
+
+.gaugeWrap { display: flex; align-items: center; gap: var(--sp-5); }
+.gaugeNum { font-family: var(--sans-display); font-weight: 680; font-size: 2.6rem; line-height: 1; letter-spacing: -0.03em; }
+.legend { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-4); margin-top: var(--sp-3); }
+.legendItem { display: inline-flex; align-items: center; gap: 0.4em; font-size: var(--fs-xs); color: var(--text-muted); }
