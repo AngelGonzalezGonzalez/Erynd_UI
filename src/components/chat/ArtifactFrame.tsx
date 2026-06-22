@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useI18n } from '../../i18n/useI18n';
 import { useStore } from '../../store/useStore';
-import { Card } from '../primitives';
+import { Card, Tip } from '../primitives';
 import { registry } from '../artifacts/registry';
 import { useMountLoad } from '../artifacts/shared';
 import type { Artifact } from '../../lib/types';
@@ -26,9 +26,11 @@ export function ArtifactFrame({ artifact }: { artifact: Artifact }) {
           <span className={c.frameGlyph}>{def.glyph}</span>
           <span className={c.frameTitle}>{t(artifact.title || def.titleKey)}</span>
           <span className={c.frameSpacer} />
-          <button className={c.expandBtn} onClick={() => openSurface(artifact.kind, t(artifact.title || def.titleKey), artifact.payload)}>
-            ⤢ {t('common.expand')}
-          </button>
+          <Tip text={t('tip.expand')} side="left">
+            <button className={c.expandBtn} onClick={() => openSurface(artifact.kind, t(artifact.title || def.titleKey), artifact.payload)}>
+              ⤢ {t('common.expand')}
+            </button>
+          </Tip>
         </div>
         <div className={c.frameBody}>
           <Comp full={false} state={state} payload={artifact.payload} />

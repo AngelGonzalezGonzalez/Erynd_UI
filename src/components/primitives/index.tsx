@@ -1,22 +1,34 @@
-import React, { useState, useId } from 'react';
+import React from 'react';
 import type { Severity, Sentiment } from '../../lib/types';
+import { Tip } from './Tip';
 import s from './primitives.module.css';
+
+export { Tip } from './Tip';
 
 /* ---------------- Button ---------------- */
 type BtnVariant = 'primary' | 'secondary' | 'ghost' | 'accent' | 'danger';
 export function Button({
   variant = 'secondary',
   size,
+  loading,
   className = '',
   children,
+  disabled,
   ...rest
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: BtnVariant;
   size?: 'sm' | 'lg';
+  loading?: boolean;
 }) {
   const sz = size === 'sm' ? s.sm : size === 'lg' ? s.lg : '';
   return (
-    <button className={`${s.btn} ${s[variant]} ${sz} ${className}`} {...rest}>
+    <button
+      className={`${s.btn} ${s[variant]} ${sz} ${className}`}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      {...rest}
+    >
+      {loading && <Aperture size={14} spin className={s.btnSpin} />}
       {children}
     </button>
   );
@@ -158,7 +170,7 @@ export function Aperture({ size = 24, spin, className = '' }: { size?: number; s
 
 /* ---------------- Skeleton ---------------- */
 export function Skeleton({ w = '100%', h = 14, r, style }: { w?: number | string; h?: number | string; r?: number; style?: React.CSSProperties }) {
-  return <div className={s.skeleton} style={{ width: w, height: h, borderRadius: r, ...style }} />;
+  return <div className={s.skeleton} aria-hidden style={{ width: w, height: h, borderRadius: r, ...style }} />;
 }
 
 /* ---------------- Empty / Error states ---------------- */
@@ -191,29 +203,14 @@ export function ErrorState({ title, body, onRetry, retryLabel }: { title: string
   );
 }
 
-/* ---------------- Tooltip (glossary helper) ---------------- */
+/* ---------------- Tooltip (glossary helper) — the "?" dot, now via Tip ---------------- */
 export function Tooltip({ label }: { label: string }) {
-  const [open, setOpen] = useState(false);
-  const id = useId();
   return (
-    <span className={s.tooltip}>
-      <button
-        type="button"
-        className={s.tooltipDot}
-        aria-describedby={id}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
-        onFocus={() => setOpen(true)}
-        onBlur={() => setOpen(false)}
-      >
+    <Tip text={label}>
+      <button type="button" className={s.tooltipDot} aria-label={label}>
         ?
       </button>
-      {open && (
-        <span role="tooltip" id={id} className={s.tooltipBubble}>
-          {label}
-        </span>
-      )}
-    </span>
+    </Tip>
   );
 }
 

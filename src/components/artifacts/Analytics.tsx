@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useI18n } from '../../i18n/useI18n';
 import { useStore } from '../../store/useStore';
 import { sentimentSeries, shareOfVoice, aveSeries, radar, brandHealth, getMentions, BRAND } from '../../data/mockData';
-import { Button, Skeleton, EmptyState, ErrorState, Tooltip } from '../primitives';
+import { Button, Skeleton, EmptyState, ErrorState, Tooltip, Tip } from '../primitives';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
 import { SentimentTrend, BarSeries, ShareOfVoice, CompetitiveRadar, HealthGauge } from '../charts';
 import { ArtifactProps } from './shared';
 import a from './artifacts.module.css';
@@ -23,7 +24,16 @@ export function Analytics({ full, state }: ArtifactProps) {
   const [lens, setLens] = useState<Lens>('sentiment');
   const openEvidence = useStore((s) => s.openEvidence);
   const addLedger = useStore((s) => s.addLedger);
-  const pushToast = useStore((s) => s.pushToast);
+
+  // Export actions — brief processing, then a confirming toast + ledger entry.
+  const exportPdf = useAsyncAction(
+    () => { addLedger({ kind: 'acted', label: 'Exported analytics', detail: `${lens} · PDF (branded)`, status: 'done' }); },
+    { successToast: t('toast.exported'), minMs: 900 }
+  );
+  const exportCsv = useAsyncAction(
+    () => { addLedger({ kind: 'acted', label: 'Exported analytics', detail: `${lens} · CSV`, status: 'done' }); },
+    { successToast: t('toast.exportedCsv'), minMs: 700 }
+  );
 
   if (state === 'loading') {
     return (
@@ -42,11 +52,6 @@ export function Analytics({ full, state }: ArtifactProps) {
     openEvidence({ title: `${t('an.evidence')} · ${label}`, subtitle: t('an.evidenceSub'), mentionIds: ids });
   };
 
-  const exportReport = () => {
-    const id = addLedger({ kind: 'acted', label: 'Exported analytics', detail: `${lens} · PDF (branded)`, status: 'done' });
-    pushToast('Report exported · PDF', id);
-  };
-
   const lenses: { id: Lens; label: string }[] = [
     { id: 'sentiment', label: t('an.sentiment') },
     { id: 'sov', label: t('an.sov') },
@@ -60,9 +65,11 @@ export function Analytics({ full, state }: ArtifactProps) {
     <div className={a.body}>
       <div className={a.chips}>
         {shownLenses.map((l) => (
-          <button key={l.id} className={`${a.chip} ${lens === l.id ? a.chipActive : ''}`} onClick={() => setLens(l.id)}>
-            {l.label}
-          </button>
+          <Tip key={l.id} text={t('tip.lens')} side="top">
+            <button className={`${a.chip} ${lens === l.id ? a.chipActive : ''}`} aria-pressed={lens === l.id} onClick={() => setLens(l.id)}>
+              {l.label}
+            </button>
+          </Tip>
         ))}
       </div>
 
@@ -112,9 +119,15 @@ export function Analytics({ full, state }: ArtifactProps) {
 
       {full && (
         <div className={a.actions}>
-          <Button variant="primary" size="sm" onClick={exportReport}>{t('common.export')} · PDF</Button>
-          <Button variant="secondary" size="sm" onClick={exportReport}>CSV</Button>
-          <Button variant="ghost" size="sm" onClick={() => drill(t('an.sentiment'), sentimentSeries[4].mentionIds)}>{t('common.viewEvidence')}</Button>
+          <Tip text={t('tip.exportPdf')} side="top">
+            <Button variant="primary" size="sm" loading={exportPdf.loading} onClick={exportPdf.run}>{t('common.export')} · PDF</Button>
+          </Tip>
+          <Tip text={t('tip.exportCsv')} side="top">
+            <Button variant="secondary" size="sm" loading={exportCsv.loading} onClick={exportCsv.run}>CSV</Button>
+          </Tip>
+          <Tip text={t('tip.viewEvidence')} side="top">
+            <Button variant="ghost" size="sm" onClick={() => drill(t('an.sentiment'), sentimentSeries[4].mentionIds)}>{t('common.viewEvidence')}</Button>
+          </Tip>
         </div>
       )}
       {!full && (

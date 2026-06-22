@@ -279,6 +279,113 @@ export const en = {
   'state.errorTitle': 'That didn’t go through',
   'state.errorBody': 'Something interrupted the request. Your data is safe.',
   'state.emptyTitle': 'Nothing here yet',
+
+  // Tooltips & closed-loop feedback — shell
+  'tip.menuLeft': 'Show what ERYND is watching',
+  'tip.menuRight': 'Show the trust ledger — approvals and undo',
+  'tip.search': 'Search surfaces or ask — ⌘K',
+  'tip.role': 'Switch role — analyst, PR, manager',
+  'tip.lang': 'Switch language — English / Español',
+  'tip.themeToDark': 'Switch to dark',
+  'tip.themeToLight': 'Switch to light',
+  'tip.notifications': 'Recent signal and activity',
+  'tip.settings': 'Settings, plan and team',
+  'toast.role': 'Now viewing as',
+  'toast.themeDark': 'Switched to dark',
+  'toast.themeLight': 'Switched to light',
+  'toast.autonomy': 'Autonomy set to',
+  'lang.en': 'English',
+  'lang.es': 'Español',
+  'notif.title': 'Recent activity',
+  'notif.empty': 'All quiet. New signal and assistant activity show up here.',
+
+  // Tooltips — watching rail & trust ledger
+  'tip.watchItem': 'Open this monitor in Search',
+  'tip.open': 'Open',
+  'tip.addSearch': 'Build a new search and alert',
+  'tip.approve': 'Approve — this will send',
+  'tip.reject': 'Reject and discard',
+  'tip.undo': 'Undo this action',
+
+  // Tooltips — composer & chat
+  'tip.promptChip': 'Send this prompt',
+  'tip.send': 'Send · Enter',
+  'tip.sendEmpty': 'Type a message to send',
+  'tip.sendBusy': 'One moment — ERYND is responding',
+  'composer.hint': 'Enter to send · Shift+Enter for a new line',
+  'tip.acceptProposal': 'Approve — ERYND will draft this',
+
+  // Tooltips — artifact frame
+  'tip.expand': 'Open full surface',
+  'tip.close': 'Close · Esc',
+  'tip.statePreview': 'Preview this state',
+
+  // Tooltips & toasts — analytics
+  'tip.lens': 'Show this lens',
+  'tip.exportPdf': 'Export this view as a branded PDF',
+  'tip.exportCsv': 'Export the underlying data as CSV',
+  'tip.viewEvidence': 'Open the underlying mentions',
+  'toast.exported': 'Report ready — saved to your exports',
+  'toast.exportedCsv': 'CSV exported',
+
+  // Tooltips & toasts — response draft
+  'tip.angle': 'Switch angle',
+  'resp.editHint': 'Edit freely — scores update as you go',
+  'tip.publish': 'Approve and route to publishing — outbound is gated',
+  'tip.pitch': 'Approve and route to a media pitch',
+  'tip.regen': 'Reset to the original draft',
+  'toast.regen': 'Draft reset to the original',
+  'tip.clarity': 'How clearly the message reads',
+  'tip.tone': 'How closely it matches your brand voice',
+  'tip.predicted': 'Estimated audience response',
+
+  // Tooltips & toasts — kanban
+  'tip.kanCard': 'Drag to move, or click for detail',
+  'toast.moved': 'Moved to',
+  'tip.closeDetail': 'Close',
+
+  // Tooltips & toasts — search builder
+  'tip.mode': 'Switch mode',
+  'tip.aiDraft': 'Generate a query from your description',
+  'tip.queryEdit': 'Edit the query — we lint it live',
+  'tip.filter': 'Filter results',
+  'tip.saveSearch': 'Save this search and alert',
+  'tip.saveInvalid': 'Fix the query before saving',
+  'toast.queryDrafted': 'Query drafted from your description',
+
+  // Tooltips & toasts — media CRM
+  'tip.journalist': 'Select to draft a pitch',
+  'tip.pitchStart': 'Start a pitch',
+  'crm.optedOut': 'has opted out of pitches',
+  'tip.pitchSend': 'Queue for approval — outbound is gated',
+  'tip.pitchCancel': 'Discard this pitch',
+  'crm.bodyHint': 'AI-personalized — edit before sending',
+  'toast.pitchQueued': 'Pitch queued for approval',
+
+  // Tooltips & toasts — social publisher
+  'tip.postTo': 'Post to',
+  'tip.aiAssist': 'Let ERYND tighten the copy',
+  'tip.hashtags': 'Suggest relevant hashtags',
+  'tip.schedule': 'Queue for approval at the best time',
+  'tip.publishNow': 'Publish immediately',
+  'tip.composeDisabled': 'Select a platform and stay within the limit',
+  'toast.copyTightened': 'Copy tightened by the assistant',
+  'toast.hashtags': 'Hashtags added',
+
+  // Tooltips & toasts — ROI & settings
+  'tip.linkedActions': 'Show the actions behind this ROI',
+  'tip.buildBoard': 'Generate a board-ready report',
+  'toast.boardBuilt': 'Board report scheduled',
+  'tip.upgrade': 'Review plans and add-ons',
+  'toast.upgrade': 'Plans open in billing',
+
+  // Tooltips & toasts — briefing & warning detail
+  'tip.investigate': 'Open the warning detail',
+  'tip.assign': 'Assign with a 4-hour SLA',
+  'toast.assigned': 'Assigned · 4h SLA started',
+  'tip.warnEscalate': 'Draft a response now',
+  'tip.warnMonitor': 'Keep watching — log it without escalating',
+  'tip.warnNoise': 'Mark as noise and stop tracking',
 };
 
 export type DictKey = keyof typeof en;

@@ -2,30 +2,34 @@ import { useState } from 'react';
 import { useI18n } from '../../i18n/useI18n';
 import { useStore } from '../../store/useStore';
 import { journalists } from '../../data/mockData';
-import { Button, Avatar, Pill, EmptyState } from '../primitives';
+import { Button, Avatar, Pill, EmptyState, Tip } from '../primitives';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
 import { ArtifactProps } from './shared';
 import a from './artifacts.module.css';
 import type { Journalist } from '../../lib/types';
 
 const pipe = ['queued', 'sent', 'opened', 'replied'] as const;
+const pitchBody = (j: Journalist) =>
+  `Hi ${j.name.split(' ')[0]}, you flagged the Aria 2 battery reports — here are the specifics ahead of anyone else: affected batch named, firmware 1.4.2 Thursday, no-questions replacements live today. Happy to put our audio lead on the record. — Mara, ERYND`;
 
 export function MediaCRM({ full, state }: ArtifactProps) {
   const { t } = useI18n();
   const [selected, setSelected] = useState<Journalist | null>(full ? journalists[0] : null);
   const [composing, setComposing] = useState(false);
   const [sent, setSent] = useState(false);
+  const [subject, setSubject] = useState('Aria 2 battery fix — the specifics, with a date');
+  const [body, setBody] = useState(full ? pitchBody(journalists[0]) : '');
   const addLedger = useStore((s) => s.addLedger);
-  const pushToast = useStore((s) => s.pushToast);
+
+  const sendPitch = useAsyncAction(
+    () => { setSent(true); addLedger({ kind: 'queued', label: 'Pitch queued for approval', detail: `${selected?.name} · ${selected?.outlet}`, outbound: true, status: 'pending_approval' }); },
+    { successToast: t('toast.pitchQueued'), minMs: 800 }
+  );
 
   if (state === 'empty') return <EmptyState title={t('state.emptyTitle')} body={t('crm.empty')} action={<Button size="sm" variant="secondary">{t('crm.import')}</Button>} />;
 
   const list = full ? journalists : journalists.slice(0, 3);
-
-  const send = () => {
-    setSent(true);
-    const id = addLedger({ kind: 'queued', label: 'Pitch queued for approval', detail: `${selected?.name} · ${selected?.outlet}`, outbound: true, status: 'pending_approval' });
-    pushToast(`${t('crm.pipeline')}: ${t('crm.queued')} → ${selected?.name}`, id);
-  };
+  const startPitch = (j: Journalist) => { setComposing(true); setBody(pitchBody(j)); };
 
   return (
     <div className={a.body}>
@@ -34,7 +38,7 @@ export function MediaCRM({ full, state }: ArtifactProps) {
           <div className={a.itemSub}>{t('crm.find')} · <span style={{ color: 'var(--accent)' }}>◎ {t('crm.match')}</span> {t('common.now')}</div>
           <div className={a.list}>
             {list.map((j) => (
-              <div className={a.journalistCard} key={j.id} onClick={() => setSelected(j)}>
+              <div className={a.journalistCard} key={j.id} title={t('tip.journalist')} onClick={() => setSelected(j)}>
                 <Avatar name={j.name} hue={j.avatarHue} size={40} />
                 <div className={a.itemMain}>
                   <div className={a.itemTitle}>{j.name} <span className={a.matchScore}>· {j.matchScore}% {t('crm.match')}</span></div>
@@ -70,8 +74,10 @@ export function MediaCRM({ full, state }: ArtifactProps) {
             </>
           )}
           <div className={a.actions} style={{ marginTop: 'var(--sp-3)' }}>
-            <Button variant="accent" size="sm" disabled={selected.status === 'optedout'} onClick={() => setComposing(true)}>{t('crm.pitch')}</Button>
-            {selected.status === 'optedout' && <span className={a.faint} style={{ fontSize: 'var(--fs-xs)', alignSelf: 'center' }}>Opted out — cannot pitch</span>}
+            <Tip text={selected.status === 'optedout' ? `${selected.name.split(' ')[0]} ${t('crm.optedOut')}` : t('tip.pitchStart')} side="top">
+              <Button variant="accent" size="sm" disabled={selected.status === 'optedout'} onClick={() => startPitch(selected)}>{t('crm.pitch')}</Button>
+            </Tip>
+            {selected.status === 'optedout' && <span className={a.faint} style={{ fontSize: 'var(--fs-xs)', alignSelf: 'center' }}>{selected.name.split(' ')[0]} {t('crm.optedOut')}</span>}
           </div>
         </div>
       )}
@@ -82,9 +88,10 @@ export function MediaCRM({ full, state }: ArtifactProps) {
             <div className={a.title} style={{ fontSize: 'var(--fs-h3)' }}>{t('crm.pitch')} → {selected.name}</div>
           </div>
           <label className={a.label}>{t('crm.subject')}</label>
-          <input className={a.field} defaultValue="Aria 2 battery fix — the specifics, with a date" />
+          <input className={a.field} aria-label={t('crm.subject')} value={subject} onChange={(e) => setSubject(e.target.value)} />
           <label className={a.label} style={{ marginTop: 'var(--sp-3)' }}>{t('crm.body')}</label>
-          <textarea className={`${a.field} ${a.textarea}`} defaultValue={`Hi ${selected.name.split(' ')[0]}, you flagged the Aria 2 battery reports — here are the specifics ahead of anyone else: affected batch named, firmware 1.4.2 Thursday, no-questions replacements live today. Happy to put our audio lead on the record. — Mara, ERYND`} />
+          <textarea className={`${a.field} ${a.textarea}`} aria-label={t('crm.body')} value={body} onChange={(e) => setBody(e.target.value)} />
+          <div className={a.itemSub}>{t('crm.bodyHint')}</div>
           <div style={{ marginTop: 'var(--sp-2)' }}><Pill>◎ {t('crm.attach')}: Aria-2-firmware.pdf</Pill></div>
 
           <div className={a.gate} style={{ marginTop: 'var(--sp-3)' }}>
@@ -102,8 +109,12 @@ export function MediaCRM({ full, state }: ArtifactProps) {
             </div>
           ) : (
             <div className={a.actions} style={{ marginTop: 'var(--sp-3)' }}>
-              <Button variant="primary" size="sm" onClick={send}>{t('common.approve')} & {t('common.send')}</Button>
-              <Button variant="ghost" size="sm" onClick={() => setComposing(false)}>{t('common.cancel')}</Button>
+              <Tip text={t('tip.pitchSend')} side="top">
+                <Button variant="primary" size="sm" loading={sendPitch.loading} onClick={sendPitch.run}>{t('common.approve')} & {t('common.send')}</Button>
+              </Tip>
+              <Tip text={t('tip.pitchCancel')} side="top">
+                <Button variant="ghost" size="sm" onClick={() => setComposing(false)}>{t('common.cancel')}</Button>
+              </Tip>
             </div>
           )}
         </div>

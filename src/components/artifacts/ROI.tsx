@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useI18n } from '../../i18n/useI18n';
 import { useStore } from '../../store/useStore';
 import { actions, shareOfVoice, BRAND } from '../../data/mockData';
-import { Button, Stat, Pill, EmptyState } from '../primitives';
+import { Button, Stat, Pill, EmptyState, Tip } from '../primitives';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
 import { ShareOfVoice } from '../charts';
 import { ArtifactProps } from './shared';
 import a from './artifacts.module.css';
@@ -17,16 +18,15 @@ export function ROI({ full, state }: ArtifactProps) {
   const { t } = useI18n();
   const [drilled, setDrilled] = useState(false);
   const addLedger = useStore((s) => s.addLedger);
-  const pushToast = useStore((s) => s.pushToast);
+
+  const build = useAsyncAction(
+    () => { addLedger({ kind: 'acted', label: 'Built board report', detail: 'ROI & attribution · PPT (branded) · scheduled monthly', status: 'done' }); },
+    { successToast: t('toast.boardBuilt'), minMs: 1000 }
+  );
 
   if (state === 'empty') return <EmptyState title={t('state.emptyTitle')} body={t('roi.empty')} />;
 
   const measured = actions.filter((c) => c.roi);
-
-  const build = () => {
-    const id = addLedger({ kind: 'acted', label: 'Built board report', detail: 'ROI & attribution · PPT (branded) · scheduled monthly', status: 'done' });
-    pushToast('Board report built · scheduled', id);
-  };
 
   return (
     <div className={a.body}>
@@ -47,9 +47,11 @@ export function ROI({ full, state }: ArtifactProps) {
             <span>{s.value}%</span>
           </div>
         ))}
-        <Button variant="ghost" size="sm" style={{ marginTop: 8 }} onClick={() => setDrilled((d) => !d)}>
-          {drilled ? t('common.collapse') : `${t('roi.linked')} →`}
-        </Button>
+        <Tip text={t('tip.linkedActions')} side="top">
+          <Button variant="ghost" size="sm" style={{ marginTop: 8 }} aria-expanded={drilled} onClick={() => setDrilled((d) => !d)}>
+            {drilled ? t('common.collapse') : `${t('roi.linked')} →`}
+          </Button>
+        </Tip>
         {drilled && (
           <div className={a.list} style={{ marginTop: 8 }}>
             {measured.map((c) => (
@@ -75,7 +77,9 @@ export function ROI({ full, state }: ArtifactProps) {
       <div className={a.panel}>
         <div className={a.itemTitle}>{t('roi.board')}</div>
         <div className={a.itemSub} style={{ marginBottom: 10 }}>{t('roi.boardSub')}</div>
-        <Button variant="primary" size="sm" onClick={build}>{t('roi.board')}</Button>
+        <Tip text={t('tip.buildBoard')} side="top">
+          <Button variant="primary" size="sm" loading={build.loading} onClick={build.run}>{t('roi.board')}</Button>
+        </Tip>
       </div>
     </div>
   );

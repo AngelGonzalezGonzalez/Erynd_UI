@@ -1,7 +1,7 @@
 import { useI18n } from '../../i18n/useI18n';
 import { useStore } from '../../store/useStore';
 import { warnings } from '../../data/mockData';
-import { Button, SeverityBadge, SentimentBadge, Pill, EmptyState, fmt } from '../primitives';
+import { Button, SeverityBadge, SentimentBadge, Pill, EmptyState, Tip, fmt } from '../primitives';
 import { Sparkline } from '../charts';
 import { ArtifactProps } from './shared';
 import a from './artifacts.module.css';
@@ -70,10 +70,18 @@ export function WarningDetail({ full, state, payload }: ArtifactProps) {
       </div>
 
       <div className={a.actions}>
-        <Button variant="accent" size="sm" onClick={() => send(t('prompt.respond'))}>{t('warn.escalate')}</Button>
-        <Button variant="secondary" size="sm" onClick={() => openEvidence({ title: t('an.evidence'), subtitle: t('an.evidenceSub'), mentionIds: w.mentionIds })}>{t('common.viewEvidence')} ({w.mentionIds.length})</Button>
-        <Button variant="ghost" size="sm" onClick={() => route(t('warn.monitor'), 'acted')}>{t('warn.monitor')}</Button>
-        <Button variant="ghost" size="sm" onClick={() => route(t('warn.noise'), 'acted')}>{t('warn.noise')}</Button>
+        <Tip text={t('tip.warnEscalate')} side="top">
+          <Button variant="accent" size="sm" onClick={() => send(t('prompt.respond'))}>{t('warn.escalate')}</Button>
+        </Tip>
+        <Tip text={t('tip.viewEvidence')} side="top">
+          <Button variant="secondary" size="sm" onClick={() => openEvidence({ title: t('an.evidence'), subtitle: t('an.evidenceSub'), mentionIds: w.mentionIds })}>{t('common.viewEvidence')} ({w.mentionIds.length})</Button>
+        </Tip>
+        <Tip text={t('tip.warnMonitor')} side="top">
+          <Button variant="ghost" size="sm" onClick={() => route(t('warn.monitor'), 'acted')}>{t('warn.monitor')}</Button>
+        </Tip>
+        <Tip text={t('tip.warnNoise')} side="top">
+          <Button variant="ghost" size="sm" onClick={() => route(t('warn.noise'), 'acted')}>{t('warn.noise')}</Button>
+        </Tip>
       </div>
     </div>
   );

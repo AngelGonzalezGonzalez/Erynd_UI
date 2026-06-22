@@ -10,7 +10,7 @@ export function Toasts() {
   const undoLedger = useStore((st) => st.undoLedger);
 
   return (
-    <div className={s.toasts}>
+    <div className={s.toasts} role="status" aria-live="polite" aria-atomic="false">
       <AnimatePresence>
         {toasts.map((toast) => (
           <motion.div
@@ -30,7 +30,7 @@ export function Toasts() {
                 ↺ {t('common.undo')}
               </button>
             )}
-            <button className={s.undoLink} style={{ color: 'var(--text-faint)' }} onClick={() => dismiss(toast.id)}>✕</button>
+            <button className={s.undoLink} style={{ color: 'var(--text-faint)' }} onClick={() => dismiss(toast.id)} aria-label={t('common.close')}>✕</button>
           </motion.div>
         ))}
       </AnimatePresence>

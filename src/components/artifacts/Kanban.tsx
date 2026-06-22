@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useI18n } from '../../i18n/useI18n';
 import { useStore } from '../../store/useStore';
 import { actions as seed } from '../../data/mockData';
-import { Button, Skeleton, EmptyState, ErrorState, Pill, SeverityBadge } from '../primitives';
+import { Button, Skeleton, EmptyState, ErrorState, Pill, SeverityBadge, Tip } from '../primitives';
 import { ArtifactProps } from './shared';
 import a from './artifacts.module.css';
 import type { ActionCard, ActionStage } from '../../lib/types';
@@ -13,6 +13,7 @@ export function Kanban({ full, state }: ArtifactProps) {
   const { t } = useI18n();
   const [cards, setCards] = useState<ActionCard[]>(seed);
   const [dragId, setDragId] = useState<string | null>(null);
+  const [overStage, setOverStage] = useState<ActionStage | null>(null);
   const [openId, setOpenId] = useState<string | null>(full ? seed.find((c) => c.stage === 'measured')?.id ?? null : null);
   const pushToast = useStore((s) => s.pushToast);
   const addLedger = useStore((s) => s.addLedger);
@@ -41,9 +42,10 @@ export function Kanban({ full, state }: ArtifactProps) {
           return (
             <div
               key={stage}
-              className={a.kanCol}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={() => dragId && move(dragId, stage)}
+              className={`${a.kanCol} ${dragId && overStage === stage ? a.kanColOver : ''}`}
+              onDragOver={(e) => { e.preventDefault(); if (overStage !== stage) setOverStage(stage); }}
+              onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setOverStage((s) => (s === stage ? null : s)); }}
+              onDrop={() => { if (dragId) move(dragId, stage); setOverStage(null); }}
             >
               <div className={a.kanColHead}>
                 <span>{t(`kan.${stage}`)}</span>
@@ -54,8 +56,9 @@ export function Kanban({ full, state }: ArtifactProps) {
                   key={c.id}
                   className={`${a.kanCard} ${dragId === c.id ? a.kanDragging : ''}`}
                   draggable
+                  title={t('tip.kanCard')}
                   onDragStart={() => setDragId(c.id)}
-                  onDragEnd={() => setDragId(null)}
+                  onDragEnd={() => { setDragId(null); setOverStage(null); }}
                   onClick={() => setOpenId(openId === c.id ? null : c.id)}
                 >
                   <div className={a.kanTitle}>{c.title}</div>
@@ -79,7 +82,9 @@ export function Kanban({ full, state }: ArtifactProps) {
           <div className={a.head} style={{ marginBottom: 'var(--sp-3)' }}>
             <div className={a.title} style={{ fontSize: 'var(--fs-h3)' }}>{open.title}</div>
             <span className={a.headSpacer} />
-            <Button size="sm" variant="ghost" onClick={() => setOpenId(null)}>{t('common.close')}</Button>
+            <Tip text={t('tip.closeDetail')} side="left">
+              <Button size="sm" variant="ghost" onClick={() => setOpenId(null)}>{t('common.close')}</Button>
+            </Tip>
           </div>
           <div className={a.kv}><span className={a.muted}>{t('kan.owner')}</span><span>{open.owner}</span></div>
           <div className={a.kv}><span className={a.muted}>{t('kan.due')}</span><span>{open.due}</span></div>
@@ -93,7 +98,9 @@ export function Kanban({ full, state }: ArtifactProps) {
             <div className={a.actions} style={{ marginTop: 'var(--sp-3)' }}>
               <span className={a.muted} style={{ fontSize: 'var(--fs-xs)', alignSelf: 'center' }}>{t('kan.move')}:</span>
               {stages.filter((s) => s !== open.stage).map((s) => (
-                <Button key={s} size="sm" variant="secondary" onClick={() => move(open.id, s)}>{t(`kan.${s}`)}</Button>
+                <Tip key={s} text={`${t('kan.move')} ${t(`kan.${s}`)}`} side="top">
+                  <Button size="sm" variant="secondary" onClick={() => move(open.id, s)}>{t(`kan.${s}`)}</Button>
+                </Tip>
               ))}
             </div>
           )}

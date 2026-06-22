@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '../../i18n/useI18n';
 import { useStore } from '../../store/useStore';
+import { Tip } from '../primitives';
 import { Message } from './Message';
 import c from './chat.module.css';
 
@@ -41,9 +42,11 @@ export function Conversation() {
         <div className={c.composerInner}>
           <div className={c.prompts}>
             {promptKeys.map((p) => (
-              <button key={p} className={c.promptChip} onClick={() => send(t(p))} disabled={busy}>
-                {t(p)}
-              </button>
+              <Tip key={p} text={busy ? t('tip.sendBusy') : t('tip.promptChip')} side="top">
+                <button className={c.promptChip} onClick={() => send(t(p))} disabled={busy}>
+                  {t(p)}
+                </button>
+              </Tip>
             ))}
           </div>
           <div className={c.composer}>
@@ -51,6 +54,7 @@ export function Conversation() {
               ref={taRef}
               className={c.composerInput}
               placeholder={t('composer.placeholder')}
+              aria-label={t('composer.placeholder')}
               rows={1}
               value={draft}
               onChange={(e) => {
@@ -65,13 +69,15 @@ export function Conversation() {
                 }
               }}
             />
-            <button className={c.sendBtn} onClick={submit} disabled={!draft.trim() || busy} aria-label={t('composer.send')}>
-              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
-                <path d="M4 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
+            <Tip text={busy ? t('tip.sendBusy') : !draft.trim() ? t('tip.sendEmpty') : t('tip.send')} side="left">
+              <button className={c.sendBtn} onClick={submit} disabled={!draft.trim() || busy} aria-label={t('composer.send')}>
+                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
+                  <path d="M4 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </Tip>
           </div>
-          <div className={c.slashHint}>{t('shell.commandHint')} · ⌘K</div>
+          <div className={c.slashHint}>{t('composer.hint')} · ⌘K</div>
         </div>
       </div>
     </div>

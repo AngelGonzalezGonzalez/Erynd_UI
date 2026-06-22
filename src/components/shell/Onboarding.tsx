@@ -12,20 +12,27 @@ export function Onboarding() {
   const complete = useStore((s) => s.completeOnboarding);
   const [step, setStep] = useState(0);
   const [seeding, setSeeding] = useState(false);
+  const [comp, setComp] = useState<string[]>([...COMPETITORS]);
+  const [sources, setSources] = useState<string[]>(['News', 'X', 'Reddit', 'TikTok']);
+  const [alertIdx, setAlertIdx] = useState(1);
+
+  const toggle = (arr: string[], set: (v: string[]) => void, v: string) =>
+    set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
   const steps = [
     {
       label: t('onb.brandLabel'),
       q: t('onb.q1'),
-      field: <input className={a.field} defaultValue={`${BRAND}, ${PRODUCT}`} autoFocus />,
+      field: <input className={a.field} defaultValue={`${BRAND}, ${PRODUCT}`} aria-label={t('onb.brandLabel')} autoFocus />,
     },
     {
       label: t('onb.competitorsLabel'),
       q: t('onb.competitorsLabel'),
       field: (
         <div className={a.chips}>
-          {COMPETITORS.map((c) => <span key={c} className={`${a.chip} ${a.chipActive}`}>{c}</span>)}
-          <span className={a.chip}>+ add</span>
+          {COMPETITORS.map((cName) => (
+            <button key={cName} className={`${a.chip} ${comp.includes(cName) ? a.chipActive : ''}`} aria-pressed={comp.includes(cName)} onClick={() => toggle(comp, setComp, cName)}>{cName}</button>
+          ))}
         </div>
       ),
     },
@@ -34,8 +41,8 @@ export function Onboarding() {
       q: t('onb.sourcesLabel'),
       field: (
         <div className={a.chips}>
-          {['News', 'X', 'Reddit', 'TikTok', 'Instagram', 'Podcasts'].map((c, i) => (
-            <span key={c} className={`${a.chip} ${i < 4 ? a.chipActive : ''}`}>{c}</span>
+          {['News', 'X', 'Reddit', 'TikTok', 'Instagram', 'Podcasts'].map((src) => (
+            <button key={src} className={`${a.chip} ${sources.includes(src) ? a.chipActive : ''}`} aria-pressed={sources.includes(src)} onClick={() => toggle(sources, setSources, src)}>{src}</button>
           ))}
         </div>
       ),
@@ -46,7 +53,7 @@ export function Onboarding() {
       field: (
         <div className={o.row}>
           {['onb.alerts.critical', 'onb.alerts.daily', 'onb.alerts.realtime'].map((k, i) => (
-            <span key={k} className={`${a.chip} ${i === 1 ? a.chipActive : ''}`}>{t(k)}</span>
+            <button key={k} className={`${a.chip} ${alertIdx === i ? a.chipActive : ''}`} aria-pressed={alertIdx === i} onClick={() => setAlertIdx(i)}>{t(k)}</button>
           ))}
         </div>
       ),

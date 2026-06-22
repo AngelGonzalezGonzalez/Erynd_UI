@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useI18n } from '../../i18n/useI18n';
 import { useStore } from '../../store/useStore';
 import { mentions } from '../../data/mockData';
-import { Button, Pill, SentimentBadge } from '../primitives';
+import { Button, Pill, SentimentBadge, Tip } from '../primitives';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
 import { ArtifactProps } from './shared';
 import a from './artifacts.module.css';
 
@@ -22,9 +23,20 @@ export function SearchBuilder({ full, state }: ArtifactProps) {
   const [nl, setNl] = useState('');
   const [query, setQuery] = useState('"Aria 2" AND (battery OR "battery life") NOT charger');
   const [active, setActive] = useState<string[]>(['Tier 1', 'Social']);
+  const [name, setName] = useState('Aria 2 · battery');
+  const [alertOn, setAlertOn] = useState(true);
   const [saved, setSaved] = useState(false);
   const addLedger = useStore((s) => s.addLedger);
-  const pushToast = useStore((s) => s.pushToast);
+
+  // AI draft + save — brief processing, then a confirming toast.
+  const draftQuery = useAsyncAction(
+    () => { setQuery('"Aria 2" AND ("battery life" OR "dies fast" OR "no aguanta") NOT charger'); setMode('advanced'); },
+    { successToast: t('toast.queryDrafted'), minMs: 800 }
+  );
+  const saveSearch = useAsyncAction(
+    () => { setSaved(true); addLedger({ kind: 'acted', label: 'Saved search + alert', detail: `${name} — ${alertOn ? 'alert on spike' : 'no alert'}`, status: 'done' }); },
+    { successToast: t('srch.saved'), minMs: 700 }
+  );
 
   if (state === 'empty') return <div className={a.body}><div className={a.itemSub}>{t('srch.zero')}</div></div>;
 
@@ -32,34 +44,28 @@ export function SearchBuilder({ full, state }: ArtifactProps) {
   const broad = query.trim().length > 0 && query.split(/\s+/).length <= 2;
   const results = mentions.filter((m) => /aria|battery/i.test(m.text)).slice(0, full ? 6 : 3);
 
-  const draftFromNL = () => {
-    setQuery('"Aria 2" AND ("battery life" OR "dies fast" OR "no aguanta") NOT charger');
-    setMode('advanced');
-    pushToast('Drafted a query from your description');
-  };
   const toggle = (o: string) => setActive((s) => (s.includes(o) ? s.filter((x) => x !== o) : [...s, o]));
-  const save = () => {
-    setSaved(true);
-    const id = addLedger({ kind: 'acted', label: 'Saved search + alert', detail: 'Aria 2 · battery — alert on spike', status: 'done' });
-    pushToast(t('srch.saved'), id);
-  };
 
   return (
     <div className={a.body}>
       <div className={a.segmented}>
         {(['ai', 'simple', 'advanced'] as Mode[]).map((m) => (
-          <button key={m} className={`${a.segBtn} ${mode === m ? a.segActive : ''}`} onClick={() => setMode(m)}>
-            {m === 'ai' ? t('srch.ai') : m === 'simple' ? t('srch.simple') : t('srch.advanced')}
-          </button>
+          <Tip key={m} text={t('tip.mode')} side="bottom">
+            <button className={`${a.segBtn} ${mode === m ? a.segActive : ''}`} aria-pressed={mode === m} onClick={() => setMode(m)}>
+              {m === 'ai' ? t('srch.ai') : m === 'simple' ? t('srch.simple') : t('srch.advanced')}
+            </button>
+          </Tip>
         ))}
       </div>
 
       {mode === 'ai' && (
         <div>
           <label className={a.label}>{t('srch.ai')}</label>
-          <input className={a.field} placeholder={t('srch.aiPlaceholder')} value={nl} onChange={(e) => setNl(e.target.value)} />
+          <input className={a.field} placeholder={t('srch.aiPlaceholder')} aria-label={t('srch.ai')} value={nl} onChange={(e) => setNl(e.target.value)} />
           <div style={{ marginTop: 'var(--sp-2)' }}>
-            <Button variant="accent" size="sm" onClick={draftFromNL}>◎ {t('srch.aiDraft')}</Button>
+            <Tip text={t('tip.aiDraft')} side="top">
+              <Button variant="accent" size="sm" loading={draftQuery.loading} onClick={draftQuery.run}>◎ {t('srch.aiDraft')}</Button>
+            </Tip>
           </div>
         </div>
       )}
@@ -67,7 +73,7 @@ export function SearchBuilder({ full, state }: ArtifactProps) {
       {(mode === 'advanced' || mode === 'simple') && (
         <div>
           <label className={a.label}>{mode === 'advanced' ? t('srch.advanced') : t('srch.simple')}</label>
-          <input className={a.field} value={query} onChange={(e) => setQuery(e.target.value)} style={{ fontFamily: mode === 'advanced' ? 'var(--mono)' : undefined, fontSize: mode === 'advanced' ? 'var(--fs-sm)' : undefined }} />
+          <input className={a.field} value={query} onChange={(e) => setQuery(e.target.value)} title={t('tip.queryEdit')} aria-label={mode === 'advanced' ? t('srch.advanced') : t('srch.simple')} style={{ fontFamily: mode === 'advanced' ? 'var(--mono)' : undefined, fontSize: mode === 'advanced' ? 'var(--fs-sm)' : undefined }} />
           <div style={{ marginTop: 'var(--sp-2)', fontSize: 'var(--fs-xs)' }}>
             {invalid ? (
               <span style={{ color: 'var(--neg)' }}>✕ {t('srch.invalid')}</span>
@@ -88,7 +94,9 @@ export function SearchBuilder({ full, state }: ArtifactProps) {
               <div className={a.label}>{t(g.key)}</div>
               <div className={a.chips}>
                 {g.opts.map((o) => (
-                  <button key={o} className={`${a.chip} ${active.includes(o) ? a.chipActive : ''}`} onClick={() => toggle(o)}>{o}</button>
+                  <Tip key={o} text={t('tip.filter')} side="top">
+                    <button className={`${a.chip} ${active.includes(o) ? a.chipActive : ''}`} aria-pressed={active.includes(o)} onClick={() => toggle(o)}>{o}</button>
+                  </Tip>
                 ))}
               </div>
             </div>
@@ -117,13 +125,15 @@ export function SearchBuilder({ full, state }: ArtifactProps) {
       ) : (
         <div>
           <div className={a.grid2}>
-            <input className={a.field} placeholder={t('srch.saveName')} defaultValue="Aria 2 · battery" />
+            <input className={a.field} placeholder={t('srch.saveName')} aria-label={t('srch.saveName')} value={name} onChange={(e) => setName(e.target.value)} />
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--fs-sm)' }}>
-              <input type="checkbox" defaultChecked /> {t('srch.saveAlert')}
+              <input type="checkbox" checked={alertOn} onChange={(e) => setAlertOn(e.target.checked)} /> {t('srch.saveAlert')}
             </label>
           </div>
           <div className={a.actions} style={{ marginTop: 'var(--sp-3)' }}>
-            <Button variant="primary" size="sm" onClick={save} disabled={invalid}>{t('common.save')}</Button>
+            <Tip text={invalid ? t('tip.saveInvalid') : t('tip.saveSearch')} side="top">
+              <Button variant="primary" size="sm" loading={saveSearch.loading} onClick={saveSearch.run} disabled={invalid}>{t('common.save')}</Button>
+            </Tip>
           </div>
         </div>
       )}

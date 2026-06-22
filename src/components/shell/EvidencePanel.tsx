@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useI18n } from '../../i18n/useI18n';
 import { useStore } from '../../store/useStore';
 import { getMentions } from '../../data/mockData';
-import { Pill, SentimentBadge, fmt } from '../primitives';
+import { Pill, SentimentBadge, Tip, fmt } from '../primitives';
 import { channelLabel } from '../artifacts/shared';
 import s from './shell.module.css';
 import a from '../artifacts/artifacts.module.css';
@@ -20,6 +20,9 @@ export function EvidencePanel() {
           <motion.div className={s.scrim} style={{ zIndex: 109 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={close} />
           <motion.aside
             className={s.evidence}
+            role="dialog"
+            aria-modal="true"
+            aria-label={evidence.title}
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
@@ -32,7 +35,9 @@ export function EvidencePanel() {
                   <div className={a.itemSub}>{evidence.subtitle} · {mentions.length} {t('common.mentions')}</div>
                 </div>
                 <span style={{ flex: 1 }} />
-                <button className={s.iconBtn} style={{ color: 'var(--text)' }} onClick={close} aria-label={t('common.close')}>✕</button>
+                <Tip text={t('tip.close')} side="left">
+                  <button className={s.iconBtn} style={{ color: 'var(--text)' }} onClick={close} aria-label={t('common.close')}>✕</button>
+                </Tip>
               </div>
             </div>
             <div className={s.evidenceBody}>
