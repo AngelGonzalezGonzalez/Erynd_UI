@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ERYND — How it works</title>
+<style>
+  :root{
+    --ink:#1d1b16; --muted:#6b6459; --line:#d8d2c6; --paper:#f4f1ea;
+    --card:#fffdf8; --accent:#c2683f; --accent2:#3f7c8c; --good:#3f8c5f;
+    --shadow:0 1px 2px rgba(0,0,0,.06),0 6px 18px rgba(0,0,0,.05);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:40px 24px 80px}
+  h1{font-size:30px;margin:0 0 4px;letter-spacing:-.5px}
+  h2{font-size:23px;margin:54px 0 6px;letter-spacing:-.3px}
+  .sub{color:var(--muted);margin:0 0 8px}
+  .lead{color:var(--muted);max-width:70ch}
+  .legend{font-size:13px;color:var(--muted);margin:10px 0 22px}
+  .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px;
+    border:1px solid var(--line);background:var(--card);margin-right:6px}
+
+  /* diagram */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:26px;box-shadow:var(--shadow);margin:18px 0 8px}
+  .layer{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  .node{flex:1 1 0;min-width:180px;border:1.5px solid var(--line);border-radius:12px;
+    background:#fff;padding:14px 16px;position:relative}
+  .node .role{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  .node .name{font-weight:650;font-size:16px;margin:2px 0 4px}
+  .node .desc{font-size:13.5px;color:var(--muted)}
+  .node.you{border-color:var(--ink)}
+  .node.fe{border-color:var(--accent2)}
+  .node.be{border-color:var(--accent)}
+  .node.db{border-color:var(--good)}
+  .node.ext{border-color:#9a7bbf;border-style:dashed}
+  .arrow{display:flex;align-items:center;justify-content:center;color:var(--muted);
+    font-size:13px;margin:6px 0;gap:8px}
+  .arrow::before,.arrow::after{content:"";height:1px;background:var(--line);flex:1;max-width:120px}
+  .down{font-size:20px;color:var(--accent);text-align:center;margin:2px 0;line-height:1}
+  .cloud{background:repeating-linear-gradient(45deg,#faf7f0,#faf7f0 8px,#f4f1ea 8px,#f4f1ea 16px)}
+
+  table{border-collapse:collapse;width:100%;margin:14px 0 0;font-size:14.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  td b{font-weight:650}
+  .tag{font-size:11px;padding:1px 7px;border-radius:6px;background:var(--paper);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+  .note{background:#fbf6ee;border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:8px;padding:12px 16px;margin:16px 0;font-size:14.5px;color:#4a4338}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr}}
+  footer{margin-top:60px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
+  .col{display:flex;flex-direction:column;gap:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>ERYND — how the app works behind the scenes</h1>
+  <p class="lead">Two pictures. The first is what you have <b>today</b> (running on your own computer). The second is what it becomes as a real <b>SaaS product</b> running on a server you own, serving many paying customers.</p>
+  <p class="legend">
+    <span class="pill" style="border-color:var(--ink)">You / users</span>
+    <span class="pill" style="border-color:var(--accent2)">Frontend (what you see)</span>
+    <span class="pill" style="border-color:var(--accent)">Backend (the brain)</span>
+    <span class="pill" style="border-color:var(--good)">Database (the memory)</span>
+    <span class="pill" style="border-color:#9a7bbf">Outside services</span>
+  </p>
+
+  <!-- ============ DIAGRAM 1 ============ -->
+  <h2>1 · Today — running on your computer</h2>
+  <p class="sub">Everything except the AI itself runs on your laptop. The AI lives in Anthropic's cloud and is reached over the internet.</p>
+
+  <div class="diagram">
+    <div class="layer">
+      <div class="node you">
+        <div class="role">You</div>
+        <div class="name">🧑 Web browser</div>
+        <div class="desc">You open <b>localhost:5173</b> and chat. You click buttons; you read answers.</div>
+      </div>
+    </div>
+
+    <div class="down">▼ &nbsp; you type a message</div>
+
+    <div class="layer">
+      <div class="node fe">
+        <div class="role">Frontend · React + Vite</div>
+        <div class="name">🖼️ The interface</div>
+        <div class="desc">All the screens, charts, and panels. It draws what you see and forwards your message to the backend. It holds <b>no secrets</b>.</div>
+      </div>
+    </div>
+
+    <div class="down">▼ &nbsp; asks the backend "what should I answer?"</div>
+
+    <div class="layer">
+      <div class="node be">
+        <div class="role">Backend · Express (Node)</div>
+        <div class="name">⚙️ The brain / API</div>
+        <div class="desc">Receives the message, decides what to do, talks to the database and the AI, and sends a clean answer back. Your secret API key lives <b>only here</b>.</div>
+      </div>
+    </div>
+
+    <div class="arrow">it then talks to two places</div>
+
+    <div class="layer">
+      <div class="node db">
+        <div class="role">Database · SQLite (one file)</div>
+        <div class="name">🗄️ The memory</div>
+        <div class="desc">A single file on your disk holding the demo data — mentions, warnings, journalists, the action board, chat history. Seeded once with <code>db:reset</code>.</div>
+      </div>
+      <div class="node ext cloud">
+        <div class="role">Outside service · over the internet</div>
+        <div class="name">🤖 Claude Sonnet 4.6</div>
+        <div class="desc">Anthropic's AI. The backend sends it your message; it writes the reply and picks which panel to open. Billed per use via your API key.</div>
+      </div>
+    </div>
+  </div>
+
+  <table>
+    <tr><th>Component</th><th>Plain English</th><th>Where it runs</th></tr>
+    <tr><td><b>Browser</b></td><td>You. The window you click around in.</td><td><span class="tag">your computer</span></td></tr>
+    <tr><td><b>Frontend</b><br><span class="tag">React + Vite</span></td><td>The "face" of the app — every screen and chart. Sends your typed messages onward; never stores passwords or keys.</td><td><span class="tag">your computer</span></td></tr>
+    <tr><td><b>Backend</b><br><span class="tag">Express / Node</span></td><td>The "brain". The only part allowed to hold the secret AI key, read/write the database, and call the AI. It turns a messy request into a tidy answer.</td><td><span class="tag">your computer</span></td></tr>
+    <tr><td><b>Database</b><br><span class="tag">SQLite</span></td><td>The app's memory — one file holding all the data. Easy now; we deliberately built it so it can graduate to a bigger database later.</td><td><span class="tag">your computer (one file)</span></td></tr>
+    <tr><td><b>Claude Sonnet 4.6</b><br><span class="tag">Anthropic API</span></td><td>The actual intelligence. It reads the conversation and writes the response. You rent it per-use; you don't host it.</td><td><span class="tag">Anthropic's cloud</span></td></tr>
+  </table>
+
+  <div class="note"><b>The safety net:</b> if the AI key is missing or the internet drops, the backend quietly answers with built-in canned responses instead of failing. That's why the demo always works, even with no key.</div>
+
+  <!-- ============ DIAGRAM 2 ============ -->
+  <h2>2 · Production — your own SaaS server</h2>
+  <p class="sub">Same core idea, but hardened to serve many paying customers safely, reliably, and around the clock — all on infrastructure <b>you own</b>. New pieces are marked <span class="tag" style="border-color:var(--accent)">NEW</span>.</p>
+
+  <div class="diagram">
+    <div class="layer">
+      <div class="node you">
+        <div class="role">Your customers</div>
+        <div class="name">🌍 Many users, any browser</div>
+        <div class="desc">They visit <b>app.yourcompany.com</b> — a real web address, not localhost.</div>
+      </div>
+    </div>
+    <div class="down">▼ &nbsp; secure connection (https)</div>
+
+    <div class="layer">
+      <div class="node be">
+        <div class="role">Front door <span class="tag" style="border-color:var(--accent)">NEW</span></div>
+        <div class="name">🚪 Reverse proxy + HTTPS</div>
+        <div class="desc">The single guarded entrance (e.g. Nginx/Caddy). Handles the padlock/encryption, blocks abuse, and routes traffic to the right place.</div>
+      </div>
+    </div>
+
+    <div class="arrow">routes to your two running apps</div>
+
+    <div class="layer">
+      <div class="node fe">
+        <div class="role">Frontend (served as files)</div>
+        <div class="name">🖼️ The interface</div>
+        <div class="desc">Same React app, pre-built and served fast to everyone.</div>
+      </div>
+      <div class="node be">
+        <div class="role">Backend · several copies <span class="tag" style="border-color:var(--accent)">NEW</span></div>
+        <div class="name">⚙️ The brain (scaled)</div>
+        <div class="desc">Multiple identical copies running at once so many users are served smoothly and one crash doesn't take the app down.</div>
+      </div>
+    </div>
+
+    <div class="arrow">the backend now relies on a fuller support cast</div>
+
+    <div class="layer">
+      <div class="node db">
+        <div class="role">Database <span class="tag" style="border-color:var(--accent)">UPGRADED</span></div>
+        <div class="name">🗄️ PostgreSQL</div>
+        <div class="desc">A professional database (replaces the single file). Keeps every customer's data separate and safe. Built so this swap is a one-line change.</div>
+      </div>
+      <div class="node be">
+        <div class="role">Accounts &amp; billing <span class="tag" style="border-color:var(--accent)">NEW</span></div>
+        <div class="name">🔐 Login + subscriptions</div>
+        <div class="desc">Sign-up, log-in, "who is this and what plan are they on", and payments (e.g. Stripe). Replaces today's single shared token.</div>
+      </div>
+      <div class="node ext">
+        <div class="role">Background workers <span class="tag" style="border-color:var(--accent)">NEW</span></div>
+        <div class="name">⏱️ Always-on jobs + queue</div>
+        <div class="desc">The "watching" engine — continuously pulls in mentions and runs alerts on a schedule, separate from live chats so nothing slows down.</div>
+      </div>
+    </div>
+
+    <div class="arrow">and these outside services, over the internet</div>
+
+    <div class="layer">
+      <div class="node ext cloud">
+        <div class="role">Outside · AI</div>
+        <div class="name">🤖 Claude (Anthropic)</div>
+        <div class="desc">The intelligence, exactly as today — or your future Apify-based agent, swappable without touching the rest.</div>
+      </div>
+      <div class="node ext cloud">
+        <div class="role">Outside · data sources <span class="tag" style="border-color:var(--accent)">NEW</span></div>
+        <div class="name">📡 Apify / social &amp; news feeds</div>
+        <div class="desc">Where real mentions come from instead of demo data.</div>
+      </div>
+      <div class="node db">
+        <div class="role">Safety net <span class="tag" style="border-color:var(--accent)">NEW</span></div>
+        <div class="name">💾 Backups + monitoring</div>
+        <div class="desc">Automatic backups, error alerts, and health dashboards so you sleep at night.</div>
+      </div>
+    </div>
+  </div>
+
+  <table>
+    <tr><th>New in production</th><th>Why you need it as a SaaS</th></tr>
+    <tr><td><b>Front door (reverse proxy + HTTPS)</b></td><td>A public, encrypted, single entrance with the padlock — required the moment strangers use your app.</td></tr>
+    <tr><td><b>Several backend copies</b></td><td>Handles many users at once and stays up if one copy crashes. This is "scaling."</td></tr>
+    <tr><td><b>PostgreSQL database</b></td><td>The single-file database is perfect for one person, not for hundreds. Postgres is the proven choice — and we built the app so switching is trivial.</td></tr>
+    <tr><td><b>Accounts &amp; billing</b></td><td>Real sign-up/login, keeping each customer's data private, and charging subscriptions.</td></tr>
+    <tr><td><b>Background workers + queue</b></td><td>The monitoring runs continuously on a schedule, not only when someone is chatting.</td></tr>
+    <tr><td><b>Real data sources (Apify etc.)</b></td><td>Live mentions from social/news replace the demo dataset.</td></tr>
+    <tr><td><b>Backups &amp; monitoring</b></td><td>Protects against data loss and tells you when something breaks before customers do.</td></tr>
+  </table>
+
+  <div class="note"><b>The reassuring part:</b> the shape barely changes. <b>Frontend → Backend → Database + AI</b> is identical in both pictures. Going to production is mostly <i>adding a support cast</i> around the same core — and two of the biggest jumps (swapping the database to Postgres, swapping the AI for an Apify agent) were deliberately designed in from day one as near one-line changes.</div>
+
+  <div class="grid2" style="margin-top:18px">
+    <div class="diagram" style="margin:0">
+      <div class="name" style="font-weight:650;margin-bottom:6px">"Run on a server I own"</div>
+      <div class="desc" style="color:var(--muted);font-size:14.5px">Every box above except the two cloud "outside services" runs on your own machine — a rented server (e.g. Hetzner, a VPS, or your own hardware). You control the data and the code. Only the AI and the live data feeds are rented per-use from outside, because hosting those yourself isn't practical.</div>
+    </div>
+    <div class="diagram" style="margin:0">
+      <div class="name" style="font-weight:650;margin-bottom:6px">What stays the same</div>
+      <div class="desc" style="color:var(--muted);font-size:14.5px">The code you have now <i>is</i> the core of the production system — not a throwaway prototype. The frontend, the backend brain, the database design, and the swappable-AI seam all carry straight over. Production work is hardening and surrounding it, not rebuilding it.</div>
+    </div>
+  </div>
+
+  <footer>ERYND architecture overview · made to be readable without a technical background. Open this file in any browser; print to PDF if you'd like to share it.</footer>
+</div>
+</body>
+</html>
