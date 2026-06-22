@@ -11,6 +11,7 @@ import type {
   LoadState,
 } from '../lib/types';
 import { routeIntent } from '../data/assistant';
+import { api, apiEnabled } from '../lib/api';
 
 let idc = 0;
 export const uid = (p = 'id') => `${p}-${Date.now().toString(36)}-${idc++}`;
@@ -157,8 +158,15 @@ export const useStore = create<State>((set, get) => ({
       busy: true,
     }));
 
-    const reply = routeIntent(text, get().autonomy, get().locale);
-    window.setTimeout(() => {
+    const autonomy = get().autonomy;
+    const locale = get().locale;
+
+    const settle = (reply: {
+      text?: string;
+      textKey?: string;
+      artifact?: Artifact;
+      proposal?: ChatMessage['proposal'];
+    }) => {
       set((s) => ({
         busy: false,
         messages: s.messages.map((m) =>
@@ -175,7 +183,19 @@ export const useStore = create<State>((set, get) => ({
             : m
         ),
       }));
-    }, 850);
+    };
+
+    // Real agent when the backend is configured; otherwise (and on any failure)
+    // fall back to the local rules so the app always answers — this is what the
+    // static GitHub Pages build does.
+    if (apiEnabled) {
+      api
+        .chat(text, autonomy, locale)
+        .then((reply) => settle(reply))
+        .catch(() => settle(routeIntent(text, autonomy, locale)));
+    } else {
+      window.setTimeout(() => settle(routeIntent(text, autonomy, locale)), 850);
+    }
   },
 
   pushAssistant: (msg) =>

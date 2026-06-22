@@ -1,0 +1,179 @@
+// ERYND backend schema.
+// SQLite now → Postgres later: change `provider` to "postgresql" and the
+// DATABASE_URL connection string; the JSON-string columns below become native
+// Json/array columns at that point. Models mirror src/lib/types.ts.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Workspace {
+  id        String   @id
+  name      String
+  createdAt DateTime @default(now())
+  analytics String? // JSON { shareOfVoice, radar, brandHealth, aveSeries }
+
+  mentions     Mention[]
+  warnings     Warning[]
+  journalists  Journalist[]
+  actions      ActionCard[]
+  team         TeamMember[]
+  opportunities Opportunity[]
+  series       SeriesPoint[]
+  messages     ChatMessage[]
+  ledger       LedgerEntry[]
+  searches     SavedSearch[]
+}
+
+model Mention {
+  id          String  @id
+  workspaceId String
+  author      String
+  handle      String
+  outlet      String
+  channel     String
+  text        String
+  lang        String
+  sentiment   String
+  reach       Int
+  influence   Int
+  time        String
+  verified    Boolean @default(false)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model Warning {
+  id              String  @id
+  workspaceId     String
+  title           String
+  summary         String
+  severity        String
+  status          String
+  velocity        Int
+  reach           Int
+  sentiment       String
+  channels        String // JSON string[]
+  spark           String // JSON number[]
+  drivingAccounts String // JSON {name,followers,posts}[]
+  guidance        String
+  mentionIds      String // JSON string[]
+  owner           String?
+  sla             String?
+  isNoise         Boolean @default(false)
+  warming         Boolean @default(false)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model Opportunity {
+  id          String @id
+  workspaceId String
+  title       String
+  detail      String
+  channel     String
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model SeriesPoint {
+  id          String  @id @default(cuid())
+  workspaceId String
+  series      String // which dataset: "sentiment" | "ave"
+  idx         Int
+  label       String
+  value       Int
+  mentionIds  String // JSON string[]
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model Journalist {
+  id              String  @id
+  workspaceId     String
+  name            String
+  outlet          String
+  beats           String // JSON string[]
+  location        String
+  matchScore      Int
+  email           String
+  recentArticles  String // JSON {title,date}[]
+  aiInsight       String
+  lastInteraction String?
+  status          String?
+  avatarHue       Int
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model ActionCard {
+  id             String  @id
+  workspaceId    String
+  title          String
+  stage          String
+  owner          String
+  due            String
+  linkedWarningId String?
+  comments       Int     @default(0)
+  fromAI         Boolean @default(false)
+  whatWeDid      String?
+  whatChanged    String?
+  learnings      String?
+  roi            String?
+  blocked        Boolean @default(false)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model TeamMember {
+  id          String @id
+  workspaceId String
+  name        String
+  role        String
+  presence    String
+  activity    String
+  hue         Int
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model ChatMessage {
+  id          String   @id @default(cuid())
+  workspaceId String
+  author      String
+  text        String?
+  artifact    String? // JSON Artifact
+  proposal    String? // JSON proposal
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model LedgerEntry {
+  id          String   @id @default(cuid())
+  workspaceId String
+  kind        String
+  label       String
+  detail      String
+  outbound    Boolean  @default(false)
+  status      String   @default("done")
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model SavedSearch {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  query       String
+  alert       Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
