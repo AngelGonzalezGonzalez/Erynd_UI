@@ -1,7 +1,13 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 // ERYND Intelligence — Vite config. No backend; static prototype.
-export default defineConfig({
-    plugins: [react()],
-    server: { port: 5173, host: true },
+export default defineConfig(function (_a) {
+    var command = _a.command;
+    return ({
+        // Relative base so assets resolve under any GitHub Pages project path
+        // (e.g. /Erynd_UI/) regardless of repo-name casing. Root path in dev.
+        base: command === 'build' ? './' : '/',
+        plugins: [react()],
+        server: { port: 5173, host: true },
+    });
 });
