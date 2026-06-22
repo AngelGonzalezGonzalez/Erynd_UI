@@ -1,236 +1,239 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ERYND — How it works</title>
-<style>
-  :root{
-    --ink:#1d1b16; --muted:#6b6459; --line:#d8d2c6; --paper:#f4f1ea;
-    --card:#fffdf8; --accent:#c2683f; --accent2:#3f7c8c; --good:#3f8c5f;
-    --shadow:0 1px 2px rgba(0,0,0,.06),0 6px 18px rgba(0,0,0,.05);
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--paper);color:var(--ink);
-    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-  .wrap{max-width:1040px;margin:0 auto;padding:40px 24px 80px}
-  h1{font-size:30px;margin:0 0 4px;letter-spacing:-.5px}
-  h2{font-size:23px;margin:54px 0 6px;letter-spacing:-.3px}
-  .sub{color:var(--muted);margin:0 0 8px}
-  .lead{color:var(--muted);max-width:70ch}
-  .legend{font-size:13px;color:var(--muted);margin:10px 0 22px}
-  .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px;
-    border:1px solid var(--line);background:var(--card);margin-right:6px}
-
-  /* diagram */
-  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;
-    padding:26px;box-shadow:var(--shadow);margin:18px 0 8px}
-  .layer{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
-  .node{flex:1 1 0;min-width:180px;border:1.5px solid var(--line);border-radius:12px;
-    background:#fff;padding:14px 16px;position:relative}
-  .node .role{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-  .node .name{font-weight:650;font-size:16px;margin:2px 0 4px}
-  .node .desc{font-size:13.5px;color:var(--muted)}
-  .node.you{border-color:var(--ink)}
-  .node.fe{border-color:var(--accent2)}
-  .node.be{border-color:var(--accent)}
-  .node.db{border-color:var(--good)}
-  .node.ext{border-color:#9a7bbf;border-style:dashed}
-  .arrow{display:flex;align-items:center;justify-content:center;color:var(--muted);
-    font-size:13px;margin:6px 0;gap:8px}
-  .arrow::before,.arrow::after{content:"";height:1px;background:var(--line);flex:1;max-width:120px}
-  .down{font-size:20px;color:var(--accent);text-align:center;margin:2px 0;line-height:1}
-  .cloud{background:repeating-linear-gradient(45deg,#faf7f0,#faf7f0 8px,#f4f1ea 8px,#f4f1ea 16px)}
-
-  table{border-collapse:collapse;width:100%;margin:14px 0 0;font-size:14.5px}
-  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-  th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-  td b{font-weight:650}
-  .tag{font-size:11px;padding:1px 7px;border-radius:6px;background:var(--paper);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
-  .note{background:#fbf6ee;border:1px solid var(--line);border-left:3px solid var(--accent);
-    border-radius:8px;padding:12px 16px;margin:16px 0;font-size:14.5px;color:#4a4338}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  @media(max-width:720px){.grid2{grid-template-columns:1fr}}
-  footer{margin-top:60px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
-  .col{display:flex;flex-direction:column;gap:10px}
-</style>
-</head>
-<body>
-<div class="wrap">
-
-  <h1>ERYND — how the app works behind the scenes</h1>
-  <p class="lead">Two pictures. The first is what you have <b>today</b> (running on your own computer). The second is what it becomes as a real <b>SaaS product</b> running on a server you own, serving many paying customers.</p>
-  <p class="legend">
-    <span class="pill" style="border-color:var(--ink)">You / users</span>
-    <span class="pill" style="border-color:var(--accent2)">Frontend (what you see)</span>
-    <span class="pill" style="border-color:var(--accent)">Backend (the brain)</span>
-    <span class="pill" style="border-color:var(--good)">Database (the memory)</span>
-    <span class="pill" style="border-color:#9a7bbf">Outside services</span>
-  </p>
-
-  <!-- ============ DIAGRAM 1 ============ -->
-  <h2>1 · Today — running on your computer</h2>
-  <p class="sub">Everything except the AI itself runs on your laptop. The AI lives in Anthropic's cloud and is reached over the internet.</p>
-
-  <div class="diagram">
-    <div class="layer">
-      <div class="node you">
-        <div class="role">You</div>
-        <div class="name">🧑 Web browser</div>
-        <div class="desc">You open <b>localhost:5173</b> and chat. You click buttons; you read answers.</div>
-      </div>
-    </div>
-
-    <div class="down">▼ &nbsp; you type a message</div>
-
-    <div class="layer">
-      <div class="node fe">
-        <div class="role">Frontend · React + Vite</div>
-        <div class="name">🖼️ The interface</div>
-        <div class="desc">All the screens, charts, and panels. It draws what you see and forwards your message to the backend. It holds <b>no secrets</b>.</div>
-      </div>
-    </div>
-
-    <div class="down">▼ &nbsp; asks the backend "what should I answer?"</div>
-
-    <div class="layer">
-      <div class="node be">
-        <div class="role">Backend · Express (Node)</div>
-        <div class="name">⚙️ The brain / API</div>
-        <div class="desc">Receives the message, decides what to do, talks to the database and the AI, and sends a clean answer back. Your secret API key lives <b>only here</b>.</div>
-      </div>
-    </div>
-
-    <div class="arrow">it then talks to two places</div>
-
-    <div class="layer">
-      <div class="node db">
-        <div class="role">Database · SQLite (one file)</div>
-        <div class="name">🗄️ The memory</div>
-        <div class="desc">A single file on your disk holding the demo data — mentions, warnings, journalists, the action board, chat history. Seeded once with <code>db:reset</code>.</div>
-      </div>
-      <div class="node ext cloud">
-        <div class="role">Outside service · over the internet</div>
-        <div class="name">🤖 Claude Sonnet 4.6</div>
-        <div class="desc">Anthropic's AI. The backend sends it your message; it writes the reply and picks which panel to open. Billed per use via your API key.</div>
-      </div>
-    </div>
-  </div>
-
-  <table>
-    <tr><th>Component</th><th>Plain English</th><th>Where it runs</th></tr>
-    <tr><td><b>Browser</b></td><td>You. The window you click around in.</td><td><span class="tag">your computer</span></td></tr>
-    <tr><td><b>Frontend</b><br><span class="tag">React + Vite</span></td><td>The "face" of the app — every screen and chart. Sends your typed messages onward; never stores passwords or keys.</td><td><span class="tag">your computer</span></td></tr>
-    <tr><td><b>Backend</b><br><span class="tag">Express / Node</span></td><td>The "brain". The only part allowed to hold the secret AI key, read/write the database, and call the AI. It turns a messy request into a tidy answer.</td><td><span class="tag">your computer</span></td></tr>
-    <tr><td><b>Database</b><br><span class="tag">SQLite</span></td><td>The app's memory — one file holding all the data. Easy now; we deliberately built it so it can graduate to a bigger database later.</td><td><span class="tag">your computer (one file)</span></td></tr>
-    <tr><td><b>Claude Sonnet 4.6</b><br><span class="tag">Anthropic API</span></td><td>The actual intelligence. It reads the conversation and writes the response. You rent it per-use; you don't host it.</td><td><span class="tag">Anthropic's cloud</span></td></tr>
-  </table>
-
-  <div class="note"><b>The safety net:</b> if the AI key is missing or the internet drops, the backend quietly answers with built-in canned responses instead of failing. That's why the demo always works, even with no key.</div>
-
-  <!-- ============ DIAGRAM 2 ============ -->
-  <h2>2 · Production — your own SaaS server</h2>
-  <p class="sub">Same core idea, but hardened to serve many paying customers safely, reliably, and around the clock — all on infrastructure <b>you own</b>. New pieces are marked <span class="tag" style="border-color:var(--accent)">NEW</span>.</p>
-
-  <div class="diagram">
-    <div class="layer">
-      <div class="node you">
-        <div class="role">Your customers</div>
-        <div class="name">🌍 Many users, any browser</div>
-        <div class="desc">They visit <b>app.yourcompany.com</b> — a real web address, not localhost.</div>
-      </div>
-    </div>
-    <div class="down">▼ &nbsp; secure connection (https)</div>
-
-    <div class="layer">
-      <div class="node be">
-        <div class="role">Front door <span class="tag" style="border-color:var(--accent)">NEW</span></div>
-        <div class="name">🚪 Reverse proxy + HTTPS</div>
-        <div class="desc">The single guarded entrance (e.g. Nginx/Caddy). Handles the padlock/encryption, blocks abuse, and routes traffic to the right place.</div>
-      </div>
-    </div>
-
-    <div class="arrow">routes to your two running apps</div>
-
-    <div class="layer">
-      <div class="node fe">
-        <div class="role">Frontend (served as files)</div>
-        <div class="name">🖼️ The interface</div>
-        <div class="desc">Same React app, pre-built and served fast to everyone.</div>
-      </div>
-      <div class="node be">
-        <div class="role">Backend · several copies <span class="tag" style="border-color:var(--accent)">NEW</span></div>
-        <div class="name">⚙️ The brain (scaled)</div>
-        <div class="desc">Multiple identical copies running at once so many users are served smoothly and one crash doesn't take the app down.</div>
-      </div>
-    </div>
-
-    <div class="arrow">the backend now relies on a fuller support cast</div>
-
-    <div class="layer">
-      <div class="node db">
-        <div class="role">Database <span class="tag" style="border-color:var(--accent)">UPGRADED</span></div>
-        <div class="name">🗄️ PostgreSQL</div>
-        <div class="desc">A professional database (replaces the single file). Keeps every customer's data separate and safe. Built so this swap is a one-line change.</div>
-      </div>
-      <div class="node be">
-        <div class="role">Accounts &amp; billing <span class="tag" style="border-color:var(--accent)">NEW</span></div>
-        <div class="name">🔐 Login + subscriptions</div>
-        <div class="desc">Sign-up, log-in, "who is this and what plan are they on", and payments (e.g. Stripe). Replaces today's single shared token.</div>
-      </div>
-      <div class="node ext">
-        <div class="role">Background workers <span class="tag" style="border-color:var(--accent)">NEW</span></div>
-        <div class="name">⏱️ Always-on jobs + queue</div>
-        <div class="desc">The "watching" engine — continuously pulls in mentions and runs alerts on a schedule, separate from live chats so nothing slows down.</div>
-      </div>
-    </div>
-
-    <div class="arrow">and these outside services, over the internet</div>
-
-    <div class="layer">
-      <div class="node ext cloud">
-        <div class="role">Outside · AI</div>
-        <div class="name">🤖 Claude (Anthropic)</div>
-        <div class="desc">The intelligence, exactly as today — or your future Apify-based agent, swappable without touching the rest.</div>
-      </div>
-      <div class="node ext cloud">
-        <div class="role">Outside · data sources <span class="tag" style="border-color:var(--accent)">NEW</span></div>
-        <div class="name">📡 Apify / social &amp; news feeds</div>
-        <div class="desc">Where real mentions come from instead of demo data.</div>
-      </div>
-      <div class="node db">
-        <div class="role">Safety net <span class="tag" style="border-color:var(--accent)">NEW</span></div>
-        <div class="name">💾 Backups + monitoring</div>
-        <div class="desc">Automatic backups, error alerts, and health dashboards so you sleep at night.</div>
-      </div>
-    </div>
-  </div>
-
-  <table>
-    <tr><th>New in production</th><th>Why you need it as a SaaS</th></tr>
-    <tr><td><b>Front door (reverse proxy + HTTPS)</b></td><td>A public, encrypted, single entrance with the padlock — required the moment strangers use your app.</td></tr>
-    <tr><td><b>Several backend copies</b></td><td>Handles many users at once and stays up if one copy crashes. This is "scaling."</td></tr>
-    <tr><td><b>PostgreSQL database</b></td><td>The single-file database is perfect for one person, not for hundreds. Postgres is the proven choice — and we built the app so switching is trivial.</td></tr>
-    <tr><td><b>Accounts &amp; billing</b></td><td>Real sign-up/login, keeping each customer's data private, and charging subscriptions.</td></tr>
-    <tr><td><b>Background workers + queue</b></td><td>The monitoring runs continuously on a schedule, not only when someone is chatting.</td></tr>
-    <tr><td><b>Real data sources (Apify etc.)</b></td><td>Live mentions from social/news replace the demo dataset.</td></tr>
-    <tr><td><b>Backups &amp; monitoring</b></td><td>Protects against data loss and tells you when something breaks before customers do.</td></tr>
-  </table>
-
-  <div class="note"><b>The reassuring part:</b> the shape barely changes. <b>Frontend → Backend → Database + AI</b> is identical in both pictures. Going to production is mostly <i>adding a support cast</i> around the same core — and two of the biggest jumps (swapping the database to Postgres, swapping the AI for an Apify agent) were deliberately designed in from day one as near one-line changes.</div>
-
-  <div class="grid2" style="margin-top:18px">
-    <div class="diagram" style="margin:0">
-      <div class="name" style="font-weight:650;margin-bottom:6px">"Run on a server I own"</div>
-      <div class="desc" style="color:var(--muted);font-size:14.5px">Every box above except the two cloud "outside services" runs on your own machine — a rented server (e.g. Hetzner, a VPS, or your own hardware). You control the data and the code. Only the AI and the live data feeds are rented per-use from outside, because hosting those yourself isn't practical.</div>
-    </div>
-    <div class="diagram" style="margin:0">
-      <div class="name" style="font-weight:650;margin-bottom:6px">What stays the same</div>
-      <div class="desc" style="color:var(--muted);font-size:14.5px">The code you have now <i>is</i> the core of the production system — not a throwaway prototype. The frontend, the backend brain, the database design, and the swappable-AI seam all carry straight over. Production work is hardening and surrounding it, not rebuilding it.</div>
-    </div>
-  </div>
-
-  <footer>ERYND architecture overview · made to be readable without a technical background. Open this file in any browser; print to PDF if you'd like to share it.</footer>
-</div>
-</body>
-</html>
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>ERYND — Architecture</title>
+<style>body{margin:0;background:#eef1f4;font-family:Segoe UI,Helvetica,Arial,sans-serif}
+.page{max-width:1123px;margin:24px auto;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.08);border-radius:8px;overflow:hidden}
+svg{display:block;width:100%;height:auto}</style></head>
+<body><div class="page"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1123 794" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+    <rect width="1123" height="794" fill="#ffffff"/>
+    <defs>
+  <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0,0 L8,3 L0,6 Z" fill="#94a3b8"/></marker>
+  <marker id="arrB" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0,0 L8,3 L0,6 Z" fill="#94a3b8"/></marker>
+</defs>
+    <text x="40" y="50" font-size="13" fill="#0f766e" font-weight="700" letter-spacing="1">ERYND · SYSTEM ARCHITECTURE</text>
+    <text x="40" y="80" font-size="24" fill="#16202c" font-weight="700">1. &nbsp;Today — local development</text>
+    <text x="40" y="104" font-size="13" fill="#5b6b7a">How a single message travels through the app on your own computer.</text>
+    <g transform="translate(760,72)">
+      <rect x="0" y="-10" width="13" height="13" rx="3" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+      <text x="20" y="1" font-size="11.5" fill="#5b6b7a">User / browser</text></g><g transform="translate(760,92)">
+      <rect x="0" y="-10" width="13" height="13" rx="3" fill="#fff" stroke="#0f766e" stroke-width="2"/>
+      <text x="20" y="1" font-size="11.5" fill="#5b6b7a">Frontend / backend</text></g><g transform="translate(760,112)">
+      <rect x="0" y="-10" width="13" height="13" rx="3" fill="#fff" stroke="#15803d" stroke-width="2"/>
+      <text x="20" y="1" font-size="11.5" fill="#5b6b7a">Database</text></g><g transform="translate(760,132)">
+      <rect x="0" y="-10" width="13" height="13" rx="3" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
+      <text x="20" y="1" font-size="11.5" fill="#5b6b7a">External AI</text></g>
+    
+    
+  <g>
+    <rect x="36" y="175" width="800" height="410" rx="14" fill="#f6f8fa" stroke="#cdd6df" stroke-width="1.5" />
+    <text x="52" y="197" text-anchor="start" font-size="11.5" letter-spacing=".5" fill="#5b6b7a" font-weight="700">YOUR COMPUTER (LOCAL MACHINE)</text>
+  </g>
+    
+  <g>
+    <rect x="858" y="215" width="245" height="165" rx="14" fill="#f6f8fa" stroke="#cdd6df" stroke-width="1.5" stroke-dasharray="7 5"/>
+    <text x="874" y="237" text-anchor="start" font-size="11.5" letter-spacing=".5" fill="#5b6b7a" font-weight="700">INTERNET</text>
+  </g>
+    
+  <g>
+    <rect x="60" y="250" width="196" height="92" rx="11" fill="#fff" stroke="#d4dbe2" stroke-width="1.5"/>
+    <rect x="60" y="250" width="196" height="5" rx="2.5" fill="#2563eb"/>
+    <text x="74" y="275" font-size="10" letter-spacing=".6" fill="#5b6b7a" font-weight="600">USER</text>
+    <text x="74" y="294" font-size="14.5" fill="#16202c" font-weight="700">Web browser</text>
+    <text x="74" y="310" font-size="11" fill="#5b6b7a">Opens localhost:5173, chats,</text><text x="74" y="324" font-size="11" fill="#5b6b7a">reads answers.</text>
+  </g>
+  <g>
+    <rect x="300" y="250" width="196" height="92" rx="11" fill="#fff" stroke="#d4dbe2" stroke-width="1.5"/>
+    <rect x="300" y="250" width="196" height="5" rx="2.5" fill="#0f766e"/>
+    <text x="314" y="275" font-size="10" letter-spacing=".6" fill="#5b6b7a" font-weight="600">FRONTEND · REACT/VITE</text>
+    <text x="314" y="294" font-size="14.5" fill="#16202c" font-weight="700">Interface</text>
+    <text x="314" y="310" font-size="11" fill="#5b6b7a">Draws every screen &amp; chart.</text><text x="314" y="324" font-size="11" fill="#5b6b7a">Holds no secrets.</text>
+  </g>
+  <g>
+    <rect x="555" y="250" width="196" height="92" rx="11" fill="#fff" stroke="#d4dbe2" stroke-width="1.5"/>
+    <rect x="555" y="250" width="196" height="5" rx="2.5" fill="#0f766e"/>
+    <text x="569" y="275" font-size="10" letter-spacing=".6" fill="#5b6b7a" font-weight="600">BACKEND · EXPRESS</text>
+    <text x="569" y="294" font-size="14.5" fill="#16202c" font-weight="700">API / brain</text>
+    <text x="569" y="310" font-size="11" fill="#5b6b7a">Orchestrates. Holds the secret</text><text x="569" y="324" font-size="11" fill="#5b6b7a">AI key.</text>
+  </g>
+  <g>
+    <rect x="880" y="250" width="200" height="92" rx="11" fill="#fff" stroke="#d4dbe2" stroke-width="1.5"/>
+    <rect x="880" y="250" width="200" height="5" rx="2.5" fill="#7c3aed"/>
+    <text x="894" y="275" font-size="10" letter-spacing=".6" fill="#5b6b7a" font-weight="600">ANTHROPIC CLOUD</text>
+    <text x="894" y="294" font-size="14.5" fill="#16202c" font-weight="700">Claude Sonnet 4.6</text>
+    <text x="894" y="310" font-size="11" fill="#5b6b7a">Writes the reply &amp; picks the</text><text x="894" y="324" font-size="11" fill="#5b6b7a">panel.</text>
+  </g>
+  <g>
+    <rect x="555" y="470" width="196" height="92" rx="11" fill="#fff" stroke="#d4dbe2" stroke-width="1.5"/>
+    <rect x="555" y="470" width="196" height="5" rx="2.5" fill="#15803d"/>
+    <text x="569" y="495" font-size="10" letter-spacing=".6" fill="#5b6b7a" font-weight="600">STORAGE · SQLITE</text>
+    <text x="569" y="514" font-size="14.5" fill="#16202c" font-weight="700">Database</text>
+    <text x="569" y="530" font-size="11" fill="#5b6b7a">One file: mentions, alerts,</text><text x="569" y="544" font-size="11" fill="#5b6b7a">history.</text>
+  </g>
+    <path d="M256,282 L300,282" fill="none" stroke="#2563eb" stroke-width="2"  marker-end="url(#arr)"/><circle cx="256" cy="282" r="11" fill="#2563eb"/>
+      <text x="256" y="286" font-size="12" fill="#fff" font-weight="700" text-anchor="middle">1</text>
+    <path d="M496,282 L555,282" fill="none" stroke="#0f766e" stroke-width="2"  marker-end="url(#arr)"/><circle cx="496" cy="282" r="11" fill="#0f766e"/>
+      <text x="496" y="286" font-size="12" fill="#fff" font-weight="700" text-anchor="middle">2</text>
+    <path d="M751,282 L880,282" fill="none" stroke="#0f766e" stroke-width="2"  marker-end="url(#arr)"/><circle cx="751" cy="282" r="11" fill="#0f766e"/>
+      <text x="751" y="286" font-size="12" fill="#fff" font-weight="700" text-anchor="middle">3</text>
+    <path d="M880,314 L751,314" fill="none" stroke="#7c3aed" stroke-width="2"  marker-end="url(#arrB)"/><circle cx="880" cy="314" r="11" fill="#7c3aed"/>
+      <text x="880" y="318" font-size="12" fill="#fff" font-weight="700" text-anchor="middle">4</text>
+    <path d="M555,314 L496,314" fill="none" stroke="#0f766e" stroke-width="2"  marker-end="url(#arrB)"/><circle cx="555" cy="314" r="11" fill="#0f766e"/>
+      <text x="555" y="318" font-size="12" fill="#fff" font-weight="700" text-anchor="middle">5</text>
+    <path d="M300,314 L256,314" fill="none" stroke="#2563eb" stroke-width="2"  marker-end="url(#arrB)"/><circle cx="300" cy="314" r="11" fill="#2563eb"/>
+      <text x="300" y="318" font-size="12" fill="#fff" font-weight="700" text-anchor="middle">6</text>
+    <path d="M645,342 L645,470" fill="none" stroke="#15803d" stroke-width="2"  marker-end="url(#arr)"/><g>
+      <rect x="600.8" y="395" width="88.4" height="20" rx="6" fill="#fff" stroke="#d4dbe2"/>
+      <text x="645" y="409" font-size="11" fill="#5b6b7a" text-anchor="middle">read / write</text></g>
+    <path d="M665,470 L665,342" fill="none" stroke="#15803d" stroke-width="2"  marker-end="url(#arrB)"/>
+    <!-- steps legend -->
+    <g transform="translate(40,615)">
+      <text x="0" y="0" font-size="12.5" font-weight="700" fill="#16202c">Request → response sequence</text>
+      <text x="0" y="24" font-size="11.5" fill="#5b6b7a"><tspan font-weight="700" fill="#16202c">1</tspan> You send a message  ·  <tspan font-weight="700" fill="#16202c">2</tspan> Frontend forwards it  ·  <tspan font-weight="700" fill="#16202c">3</tspan> Backend asks the AI</text>
+      <text x="0" y="44" font-size="11.5" fill="#5b6b7a"><tspan font-weight="700" fill="#16202c">4</tspan> AI returns reply + panel choice  ·  <tspan font-weight="700" fill="#16202c">5</tspan> Backend sends a clean answer  ·  <tspan font-weight="700" fill="#16202c">6</tspan> Frontend renders it</text>
+    </g>
+    <g transform="translate(620,615)">
+      <rect x="0" y="-14" width="463" height="70" rx="9" fill="#fff7ed" stroke="#f0d3a8"/>
+      <text x="16" y="6" font-size="11.5" font-weight="700" fill="#b45309">Built-in safety net</text>
+      <text x="16" y="26" font-size="11" fill="#7c5418">If the AI key is missing or the internet drops, the backend</text>
+      <text x="16" y="42" font-size="11" fill="#7c5418">answers with canned responses — the app never just fails.</text>
+    </g>
+    <line x1="40" y1="754" x2="1083" y2="754" stroke="#d4dbe2"/>
+    <text x="40" y="774" font-size="10.5" fill="#5b6b7a">ERYND — internal architecture documentation · confidential</text>
+    <text x="1083" y="774" font-size="10.5" fill="#5b6b7a" text-anchor="end">Figure 1</text>
+  </svg></div><div class="page"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1123 794" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+    <rect width="1123" height="794" fill="#ffffff"/>
+    <defs>
+  <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0,0 L8,3 L0,6 Z" fill="#94a3b8"/></marker>
+  <marker id="arrB" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0,0 L8,3 L0,6 Z" fill="#94a3b8"/></marker>
+</defs>
+    <text x="40" y="50" font-size="13" fill="#0f766e" font-weight="700" letter-spacing="1">ERYND · SYSTEM ARCHITECTURE</text>
+    <text x="40" y="80" font-size="24" fill="#16202c" font-weight="700">2. &nbsp;Production — SaaS on your own server</text>
+    <text x="40" y="104" font-size="13" fill="#5b6b7a">The same core, hardened to serve many paying customers reliably and 24/7.</text>
+    <g transform="translate(760,72)">
+      <rect x="0" y="-10" width="13" height="13" rx="3" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+      <text x="20" y="1" font-size="11.5" fill="#5b6b7a">Customers</text></g><g transform="translate(760,92)">
+      <rect x="0" y="-10" width="13" height="13" rx="3" fill="#fff" stroke="#0f766e" stroke-width="2"/>
+      <text x="20" y="1" font-size="11.5" fill="#5b6b7a">App server</text></g><g transform="translate(760,112)">
+      <rect x="0" y="-10" width="13" height="13" rx="3" fill="#fff" stroke="#15803d" stroke-width="2"/>
+      <text x="20" y="1" font-size="11.5" fill="#5b6b7a">Data tier</text></g><g transform="translate(760,132)">
+      <rect x="0" y="-10" width="13" height="13" rx="3" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
+      <text x="20" y="1" font-size="11.5" fill="#5b6b7a">External services</text></g>
+    
+    
+  <g>
+    <rect x="285" y="109" width="210" height="118" rx="14" fill="#f6f8fa" stroke="#cdd6df" stroke-width="1.5" />
+    <text x="301" y="131" text-anchor="start" font-size="11.5" letter-spacing=".5" fill="#5b6b7a" font-weight="700">CLIENT</text>
+  </g>
+    
+  <g>
+    <rect x="235" y="235" width="650" height="398" rx="14" fill="#f6f8fa" stroke="#cdd6df" stroke-width="1.5" stroke-dasharray="7 5"/>
+    <text x="251" y="619" text-anchor="start" font-size="11.5" letter-spacing=".5" fill="#5b6b7a" font-weight="700">INFRASTRUCTURE YOU OWN</text>
+  </g>
+    
+  <g>
+    <rect x="905" y="352" width="195" height="273" rx="14" fill="#f6f8fa" stroke="#cdd6df" stroke-width="1.5" />
+    <text x="1084" y="611" text-anchor="end" font-size="11.5" letter-spacing=".5" fill="#5b6b7a" font-weight="700">EXTERNAL SERVICES</text>
+  </g>
+    
+  <g>
+    <rect x="300" y="124" width="180" height="92" rx="11" fill="#fff" stroke="#d4dbe2" stroke-width="1.5"/>
+    <rect x="300" y="124" width="180" height="5" rx="2.5" fill="#2563eb"/>
+    <text x="314" y="149" font-size="10" letter-spacing=".6" fill="#5b6b7a" font-weight="600">CUSTOMERS</text>
+    <text x="314" y="168" font-size="14.5" fill="#16202c" font-weight="700">Many browsers</text>
+    <text x="314" y="184" font-size="11" fill="#5b6b7a">Visit app.yourcompany.com</text>
+  </g>
+  <g>
+    <rect x="255" y="245" width="470" height="92" rx="11" fill="#fff" stroke="#d4dbe2" stroke-width="1.5"/>
+    <rect x="255" y="245" width="470" height="5" rx="2.5" fill="#0f766e"/>
+    <text x="269" y="270" font-size="10" letter-spacing=".6" fill="#5b6b7a" font-weight="600">EDGE · NEW</text>
+    <text x="269" y="289" font-size="14.5" fill="#16202c" font-weight="700">Reverse proxy + HTTPS</text>
+    <text x="269" y="305" font-size="11" fill="#5b6b7a">Encryption, routing, abuse</text><text x="269" y="319" font-size="11" fill="#5b6b7a">control.</text>
+  </g>
+  <g>
+    <rect x="255" y="370" width="180" height="92" rx="11" fill="#fff" stroke="#d4dbe2" stroke-width="1.5"/>
+    <rect x="255" y="370" width="180" height="5" rx="2.5" fill="#0f766e"/>
+    <text x="269" y="395" font-size="10" letter-spacing=".6" fill="#5b6b7a" font-weight="600">FRONTEND</text>
+    <text x="269" y="414" font-size="14.5" fill="#16202c" font-weight="700">Interface (served)</text>
+    <text x="269" y="430" font-size="11" fill="#5b6b7a">Pre-built React, delivered</text><text x="269" y="444" font-size="11" fill="#5b6b7a">fast.</text>
+  </g>
+  <g>
+    <rect x="455" y="370" width="200" height="92" rx="11" fill="#fff" stroke="#d4dbe2" stroke-width="1.5"/>
+    <rect x="455" y="370" width="200" height="5" rx="2.5" fill="#0f766e"/>
+    <text x="469" y="395" font-size="10" letter-spacing=".6" fill="#5b6b7a" font-weight="600">BACKEND CLUSTER · NEW</text>
+    <text x="469" y="414" font-size="14.5" fill="#16202c" font-weight="700">API · ×N copies</text>
+    <text x="469" y="430" font-size="11" fill="#5b6b7a">Scale + uptime; login &amp;</text><text x="469" y="444" font-size="11" fill="#5b6b7a">billing.</text>
+  </g>
+  <g>
+    <rect x="685" y="370" width="180" height="92" rx="11" fill="#fff" stroke="#d4dbe2" stroke-width="1.5"/>
+    <rect x="685" y="370" width="180" height="5" rx="2.5" fill="#0f766e"/>
+    <text x="699" y="395" font-size="10" letter-spacing=".6" fill="#5b6b7a" font-weight="600">WATCH JOBS · NEW</text>
+    <text x="699" y="414" font-size="14.5" fill="#16202c" font-weight="700">Background workers</text>
+    <text x="699" y="430" font-size="11" fill="#5b6b7a">Scheduled mention pulls +</text><text x="699" y="444" font-size="11" fill="#5b6b7a">alerts.</text>
+  </g>
+  <g>
+    <rect x="455" y="515" width="200" height="92" rx="11" fill="#fff" stroke="#d4dbe2" stroke-width="1.5"/>
+    <rect x="455" y="515" width="200" height="5" rx="2.5" fill="#15803d"/>
+    <text x="469" y="540" font-size="10" letter-spacing=".6" fill="#5b6b7a" font-weight="600">DATA TIER · UPGRADED</text>
+    <text x="469" y="559" font-size="14.5" fill="#16202c" font-weight="700">PostgreSQL</text>
+    <text x="469" y="575" font-size="11" fill="#5b6b7a">Per-customer data, isolated.</text>
+  </g>
+  <g>
+    <rect x="685" y="515" width="180" height="92" rx="11" fill="#fff" stroke="#d4dbe2" stroke-width="1.5"/>
+    <rect x="685" y="515" width="180" height="5" rx="2.5" fill="#15803d"/>
+    <text x="699" y="540" font-size="10" letter-spacing=".6" fill="#5b6b7a" font-weight="600">NEW</text>
+    <text x="699" y="559" font-size="14.5" fill="#16202c" font-weight="700">Backups + monitoring</text>
+    <text x="699" y="575" font-size="11" fill="#5b6b7a">Restore points, alerts,</text><text x="699" y="589" font-size="11" fill="#5b6b7a">dashboards.</text>
+  </g>
+  <g>
+    <rect x="925" y="388" width="165" height="92" rx="11" fill="#fff" stroke="#d4dbe2" stroke-width="1.5"/>
+    <rect x="925" y="388" width="165" height="5" rx="2.5" fill="#7c3aed"/>
+    <text x="939" y="413" font-size="10" letter-spacing=".6" fill="#5b6b7a" font-weight="600">EXTERNAL</text>
+    <text x="939" y="432" font-size="14.5" fill="#16202c" font-weight="700">Claude / Apify agent</text>
+    <text x="939" y="448" font-size="11" fill="#5b6b7a">Intelligence (swappable).</text>
+  </g>
+  <g>
+    <rect x="925" y="515" width="165" height="92" rx="11" fill="#fff" stroke="#d4dbe2" stroke-width="1.5"/>
+    <rect x="925" y="515" width="165" height="5" rx="2.5" fill="#7c3aed"/>
+    <text x="939" y="540" font-size="10" letter-spacing=".6" fill="#5b6b7a" font-weight="600">EXTERNAL · NEW</text>
+    <text x="939" y="559" font-size="14.5" fill="#16202c" font-weight="700">Apify data feeds</text>
+    <text x="939" y="575" font-size="11" fill="#5b6b7a">Live social &amp; news mentions.</text>
+  </g>
+    <path d="M390,216 L390,245" fill="none" stroke="#2563eb" stroke-width="2"  marker-end="url(#arr)"/><g>
+      <rect x="367.5" y="219.5" width="45" height="20" rx="6" fill="#fff" stroke="#d4dbe2"/>
+      <text x="390" y="233.5" font-size="11" fill="#5b6b7a" text-anchor="middle">HTTPS</text></g><circle cx="390" cy="216" r="11" fill="#2563eb"/>
+      <text x="390" y="220" font-size="12" fill="#fff" font-weight="700" text-anchor="middle">1</text>
+    <path d="M345,337 L345,370" fill="none" stroke="#0f766e" stroke-width="2"  marker-end="url(#arr)"/><g>
+      <rect x="313.2" y="342.5" width="63.6" height="20" rx="6" fill="#fff" stroke="#d4dbe2"/>
+      <text x="345" y="356.5" font-size="11" fill="#5b6b7a" text-anchor="middle">serve UI</text></g>
+    <path d="M555,337 L555,370" fill="none" stroke="#0f766e" stroke-width="2"  marker-end="url(#arr)"/><g>
+      <rect x="538.7" y="342.5" width="32.6" height="20" rx="6" fill="#fff" stroke="#d4dbe2"/>
+      <text x="555" y="356.5" font-size="11" fill="#5b6b7a" text-anchor="middle">API</text></g>
+    <path d="M555,462 L555,515" fill="none" stroke="#15803d" stroke-width="2"  marker-end="url(#arr)"/><g>
+      <rect x="510.8" y="477.5" width="88.4" height="20" rx="6" fill="#fff" stroke="#d4dbe2"/>
+      <text x="555" y="491.5" font-size="11" fill="#5b6b7a" text-anchor="middle">read / write</text></g>
+    <path d="M555,370 L555,345 L1007,345 L1007,388" fill="none" stroke="#7c3aed" stroke-width="2"  marker-end="url(#arr)"/><g>
+      <rect x="975.2" y="355.5" width="63.6" height="20" rx="6" fill="#fff" stroke="#d4dbe2"/>
+      <text x="1007" y="369.5" font-size="11" fill="#5b6b7a" text-anchor="middle">generate</text></g><circle cx="555" cy="345" r="11" fill="#7c3aed"/>
+      <text x="555" y="349" font-size="12" fill="#fff" font-weight="700" text-anchor="middle">2</text>
+    <path d="M735,462 L735,492 L635,492 L635,515" fill="none" stroke="#15803d" stroke-width="2"  marker-end="url(#arr)"/><g>
+      <rect x="612.5" y="492.5" width="45" height="20" rx="6" fill="#fff" stroke="#d4dbe2"/>
+      <text x="635" y="506.5" font-size="11" fill="#5b6b7a" text-anchor="middle">store</text></g>
+    <path d="M655,561 L685,561" fill="none" stroke="#15803d" stroke-width="2"  marker-end="url(#arr)"/><g>
+      <rect x="641.3" y="550" width="57.4" height="20" rx="6" fill="#fff" stroke="#d4dbe2"/>
+      <text x="670" y="564" font-size="11" fill="#5b6b7a" text-anchor="middle">back up</text></g>
+    <path d="M925,561 L895,561 L895,416 L865,416" fill="none" stroke="#7c3aed" stroke-width="2"  marker-end="url(#arr)"/><g>
+      <rect x="832.7" y="405" width="94.60000000000001" height="20" rx="6" fill="#fff" stroke="#d4dbe2"/>
+      <text x="880" y="419" font-size="11" fill="#5b6b7a" text-anchor="middle">pull mentions</text></g><circle cx="895" cy="561" r="11" fill="#7c3aed"/>
+      <text x="895" y="565" font-size="12" fill="#fff" font-weight="700" text-anchor="middle">3</text>
+    <g transform="translate(40,675)">
+      <text x="0" y="0" font-size="12.5" font-weight="700" fill="#16202c">What changes from local → production</text>
+      <text x="0" y="22" font-size="11.5" fill="#5b6b7a">Adds: front door (HTTPS) · backend as several copies · SQLite → PostgreSQL · accounts &amp; billing · always-on watch workers · live data feeds · backups &amp; monitoring.</text>
+      <text x="0" y="42" font-size="11.5" fill="#5b6b7a">The core path — <tspan font-weight="700" fill="#16202c">Frontend → Backend → Database + AI</tspan> — is unchanged; production wraps a support cast around it, on infrastructure you own.</text>
+    </g>
+    <line x1="40" y1="754" x2="1083" y2="754" stroke="#d4dbe2"/>
+    <text x="40" y="774" font-size="10.5" fill="#5b6b7a">ERYND — internal architecture documentation · confidential</text>
+    <text x="1083" y="774" font-size="10.5" fill="#5b6b7a" text-anchor="end">Figure 2</text>
+  </svg></div></body></html>
