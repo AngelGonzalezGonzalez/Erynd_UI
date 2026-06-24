@@ -13,7 +13,7 @@ svg{display:block;width:100%;height:auto}</style></head>
 </defs>
     <text x="40" y="50" font-size="13" fill="#0f766e" font-weight="700" letter-spacing="1">ERYND · SYSTEM ARCHITECTURE</text>
     <text x="40" y="80" font-size="24" fill="#16202c" font-weight="700">1. &nbsp;Today — local development</text>
-    <text x="40" y="104" font-size="13" fill="#5b6b7a">How a single message travels through the app on your own computer.</text>
+    <text x="40" y="104" font-size="13" fill="#5b6b7a">How a single message travels through the app, and where each part is hosted.</text>
     <g transform="translate(760,72)">
       <rect x="0" y="-10" width="13" height="13" rx="3" fill="#fff" stroke="#2563eb" stroke-width="2"/>
       <text x="20" y="1" font-size="11.5" fill="#5b6b7a">User / browser</text></g><g transform="translate(760,92)">
@@ -32,7 +32,7 @@ svg{display:block;width:100%;height:auto}</style></head>
     
   <g>
     <rect x="858" y="215" width="245" height="165" rx="14" fill="#f6f8fa" stroke="#cdd6df" stroke-width="1.5" stroke-dasharray="7 5"/>
-    <text x="874" y="237" text-anchor="start" font-size="11.5" letter-spacing=".5" fill="#5b6b7a" font-weight="700">INTERNET</text>
+    <text x="874" y="237" text-anchor="start" font-size="11.5" letter-spacing=".5" fill="#5b6b7a" font-weight="700">ANTHROPIC CLOUD · INTERNET</text>
   </g>
     
   <g>
@@ -86,17 +86,33 @@ svg{display:block;width:100%;height:auto}</style></head>
       <rect x="600.8" y="395" width="88.4" height="20" rx="6" fill="#fff" stroke="#d4dbe2"/>
       <text x="645" y="409" font-size="11" fill="#5b6b7a" text-anchor="middle">read / write</text></g>
     <path d="M665,470 L665,342" fill="none" stroke="#15803d" stroke-width="2"  marker-end="url(#arrB)"/>
-    <!-- steps legend -->
-    <g transform="translate(40,615)">
-      <text x="0" y="0" font-size="12.5" font-weight="700" fill="#16202c">Request → response sequence</text>
-      <text x="0" y="24" font-size="11.5" fill="#5b6b7a"><tspan font-weight="700" fill="#16202c">1</tspan> You send a message  ·  <tspan font-weight="700" fill="#16202c">2</tspan> Frontend forwards it  ·  <tspan font-weight="700" fill="#16202c">3</tspan> Backend asks the AI</text>
-      <text x="0" y="44" font-size="11.5" fill="#5b6b7a"><tspan font-weight="700" fill="#16202c">4</tspan> AI returns reply + panel choice  ·  <tspan font-weight="700" fill="#16202c">5</tspan> Backend sends a clean answer  ·  <tspan font-weight="700" fill="#16202c">6</tspan> Frontend renders it</text>
+    <!-- where each component lives -->
+    <g transform="translate(40,612)">
+      <text x="0" y="0" font-size="12.5" font-weight="700" fill="#16202c">Where each component lives</text>
+      <g transform="translate(0,18)">
+        <rect x="0" y="0" width="13" height="13" rx="3" fill="#3341551f" stroke="#334155"/>
+        <text x="20" y="11" font-size="11.5" fill="#5b6b7a"><tspan font-weight="700" fill="#16202c">Your computer</tspan> — Browser, Frontend, Backend &amp; Database all run locally (npm run dev).</text>
+      </g>
+      <g transform="translate(0,38)">
+        <rect x="0" y="0" width="13" height="13" rx="3" fill="#7c3aed1f" stroke="#7c3aed"/>
+        <text x="20" y="11" font-size="11.5" fill="#5b6b7a"><tspan font-weight="700" fill="#16202c">Anthropic cloud</tspan> — Claude Sonnet 4.6, reached over the internet with your API key.</text>
+      </g>
+      <g transform="translate(0,58)">
+        <rect x="0" y="0" width="13" height="13" rx="3" fill="#11182710" stroke="#111827"/>
+        <text x="20" y="11" font-size="11.5" fill="#5b6b7a"><tspan font-weight="700" fill="#16202c">GitHub</tspan> — stores the source code, and serves the public <tspan font-style="italic">frontend-only</tspan> demo (GitHub Pages).</text>
+      </g>
+      <g transform="translate(0,78)">
+        <rect x="0" y="0" width="13" height="13" rx="3" fill="#0f766e1f" stroke="#0f766e"/>
+        <text x="20" y="11" font-size="11.5" fill="#5b6b7a"><tspan font-weight="700" fill="#16202c">Claude Code cloud environment</tspan> — where this was built &amp; tested. Temporary; not where you run it.</text>
+      </g>
     </g>
-    <g transform="translate(620,615)">
-      <rect x="0" y="-14" width="463" height="70" rx="9" fill="#fff7ed" stroke="#f0d3a8"/>
-      <text x="16" y="6" font-size="11.5" font-weight="700" fill="#b45309">Built-in safety net</text>
-      <text x="16" y="26" font-size="11" fill="#7c5418">If the AI key is missing or the internet drops, the backend</text>
-      <text x="16" y="42" font-size="11" fill="#7c5418">answers with canned responses — the app never just fails.</text>
+    <g transform="translate(720,612)">
+      <rect x="0" y="0" width="363" height="110" rx="9" fill="#fff7ed" stroke="#f0d3a8"/>
+      <text x="16" y="22" font-size="11.5" font-weight="700" fill="#b45309">Built-in safety net</text>
+      <text x="16" y="42" font-size="11" fill="#7c5418">If the AI key is missing or the internet drops,</text>
+      <text x="16" y="58" font-size="11" fill="#7c5418">the backend answers with canned responses —</text>
+      <text x="16" y="74" font-size="11" fill="#7c5418">the app never just fails. This is also what the</text>
+      <text x="16" y="90" font-size="11" fill="#7c5418">GitHub Pages demo uses (no backend, no key).</text>
     </g>
     <line x1="40" y1="754" x2="1083" y2="754" stroke="#d4dbe2"/>
     <text x="40" y="774" font-size="10.5" fill="#5b6b7a">ERYND — internal architecture documentation · confidential</text>

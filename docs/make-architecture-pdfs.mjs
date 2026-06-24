@@ -11,19 +11,25 @@ const W = 1123, H = 794;
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
-function node({ x, y, w = 196, h = 92, kind = 'app', role = '', title = '', desc = '' }) {
+function node({ x, y, w = 196, h = 92, kind = 'app', role = '', title = '', desc = '', host = '', hostC = '#334155' }) {
   const color = C[kind] ?? C.app;
   const lines = wrap(desc, 30);
   const descSvg = lines
     .map((l, i) => `<text x="${x + 14}" y="${y + 60 + i * 14}" font-size="11" fill="${C.muted}">${esc(l)}</text>`)
     .join('');
+  let hostTag = '';
+  if (host) {
+    const tw = host.length * 5.7 + 18;
+    hostTag = `<rect x="${x + w - 12 - tw}" y="${y + 13}" width="${tw}" height="17" rx="8.5" fill="${hostC}1f" stroke="${hostC}" stroke-opacity=".45"/>
+      <text x="${x + w - 12 - tw / 2}" y="${y + 25}" font-size="9.5" fill="${hostC}" font-weight="700" text-anchor="middle">${esc(host)}</text>`;
+  }
   return `
   <g>
     <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="11" fill="#fff" stroke="${C.line}" stroke-width="1.5"/>
     <rect x="${x}" y="${y}" width="${w}" height="5" rx="2.5" fill="${color}"/>
     <text x="${x + 14}" y="${y + 25}" font-size="10" letter-spacing=".6" fill="${C.muted}" font-weight="600">${esc(role.toUpperCase())}</text>
     <text x="${x + 14}" y="${y + 44}" font-size="14.5" fill="${C.ink}" font-weight="700">${esc(title)}</text>
-    ${descSvg}
+    ${descSvg}${hostTag}
   </g>`;
 }
 
@@ -104,6 +110,7 @@ function frame(titleNo, title, subtitle, inner, legendItems) {
 
 /* ===================== DIAGRAM 1 — TODAY ===================== */
 const d1 = (() => {
+  const LOCAL = '#334155', CLOUD = C.ext;
   const Y = 250; // node row
   const browser = { x: 60, y: Y, kind: 'client', role: 'User', title: 'Web browser', desc: 'Opens localhost:5173, chats, reads answers.' };
   const fe = { x: 300, y: Y, kind: 'app', role: 'Frontend · React/Vite', title: 'Interface', desc: 'Draws every screen & chart. Holds no secrets.' };
@@ -113,7 +120,7 @@ const d1 = (() => {
 
   const inner = `
     ${zone({ x: 36, y: 175, w: 800, h: 410, label: 'Your computer (local machine)' })}
-    ${zone({ x: 858, y: 215, w: 245, h: 165, label: 'Internet', dashed: true })}
+    ${zone({ x: 858, y: 215, w: 245, h: 165, label: 'Anthropic cloud · internet', dashed: true })}
     ${node(browser)}${node(fe)}${node(be)}${node(claude)}${node(db)}
     ${arrow([[256, 282], [300, 282]], { n: 1, color: C.client })}
     ${arrow([[496, 282], [555, 282]], { n: 2, color: C.app })}
@@ -123,20 +130,36 @@ const d1 = (() => {
     ${arrow([[300, 314], [256, 314]], { n: 6, color: C.client, back: true })}
     ${arrow([[645, 342], [645, 470]], { label: 'read / write', color: C.data })}
     ${arrow([[665, 470], [665, 342]], { color: C.data, back: true })}
-    <!-- steps legend -->
-    <g transform="translate(40,615)">
-      <text x="0" y="0" font-size="12.5" font-weight="700" fill="${C.ink}">Request → response sequence</text>
-      <text x="0" y="24" font-size="11.5" fill="${C.muted}"><tspan font-weight="700" fill="${C.ink}">1</tspan> You send a message  ·  <tspan font-weight="700" fill="${C.ink}">2</tspan> Frontend forwards it  ·  <tspan font-weight="700" fill="${C.ink}">3</tspan> Backend asks the AI</text>
-      <text x="0" y="44" font-size="11.5" fill="${C.muted}"><tspan font-weight="700" fill="${C.ink}">4</tspan> AI returns reply + panel choice  ·  <tspan font-weight="700" fill="${C.ink}">5</tspan> Backend sends a clean answer  ·  <tspan font-weight="700" fill="${C.ink}">6</tspan> Frontend renders it</text>
+    <!-- where each component lives -->
+    <g transform="translate(40,612)">
+      <text x="0" y="0" font-size="12.5" font-weight="700" fill="${C.ink}">Where each component lives</text>
+      <g transform="translate(0,18)">
+        <rect x="0" y="0" width="13" height="13" rx="3" fill="${LOCAL}1f" stroke="${LOCAL}"/>
+        <text x="20" y="11" font-size="11.5" fill="${C.muted}"><tspan font-weight="700" fill="${C.ink}">Your computer</tspan> — Browser, Frontend, Backend &amp; Database all run locally (npm run dev).</text>
+      </g>
+      <g transform="translate(0,38)">
+        <rect x="0" y="0" width="13" height="13" rx="3" fill="${CLOUD}1f" stroke="${CLOUD}"/>
+        <text x="20" y="11" font-size="11.5" fill="${C.muted}"><tspan font-weight="700" fill="${C.ink}">Anthropic cloud</tspan> — Claude Sonnet 4.6, reached over the internet with your API key.</text>
+      </g>
+      <g transform="translate(0,58)">
+        <rect x="0" y="0" width="13" height="13" rx="3" fill="#11182710" stroke="#111827"/>
+        <text x="20" y="11" font-size="11.5" fill="${C.muted}"><tspan font-weight="700" fill="${C.ink}">GitHub</tspan> — stores the source code, and serves the public <tspan font-style="italic">frontend-only</tspan> demo (GitHub Pages).</text>
+      </g>
+      <g transform="translate(0,78)">
+        <rect x="0" y="0" width="13" height="13" rx="3" fill="#0f766e1f" stroke="#0f766e"/>
+        <text x="20" y="11" font-size="11.5" fill="${C.muted}"><tspan font-weight="700" fill="${C.ink}">Claude Code cloud environment</tspan> — where this was built &amp; tested. Temporary; not where you run it.</text>
+      </g>
     </g>
-    <g transform="translate(620,615)">
-      <rect x="0" y="-14" width="463" height="70" rx="9" fill="#fff7ed" stroke="#f0d3a8"/>
-      <text x="16" y="6" font-size="11.5" font-weight="700" fill="${C.warn}">Built-in safety net</text>
-      <text x="16" y="26" font-size="11" fill="#7c5418">If the AI key is missing or the internet drops, the backend</text>
-      <text x="16" y="42" font-size="11" fill="#7c5418">answers with canned responses — the app never just fails.</text>
+    <g transform="translate(720,612)">
+      <rect x="0" y="0" width="363" height="110" rx="9" fill="#fff7ed" stroke="#f0d3a8"/>
+      <text x="16" y="22" font-size="11.5" font-weight="700" fill="${C.warn}">Built-in safety net</text>
+      <text x="16" y="42" font-size="11" fill="#7c5418">If the AI key is missing or the internet drops,</text>
+      <text x="16" y="58" font-size="11" fill="#7c5418">the backend answers with canned responses —</text>
+      <text x="16" y="74" font-size="11" fill="#7c5418">the app never just fails. This is also what the</text>
+      <text x="16" y="90" font-size="11" fill="#7c5418">GitHub Pages demo uses (no backend, no key).</text>
     </g>`;
 
-  return frame('1.', 'Today — local development', 'How a single message travels through the app on your own computer.', inner, [
+  return frame('1.', 'Today — local development', 'How a single message travels through the app, and where each part is hosted.', inner, [
     { c: C.client, t: 'User / browser' }, { c: C.app, t: 'Frontend / backend' },
     { c: C.data, t: 'Database' }, { c: C.ext, t: 'External AI' },
   ]);
