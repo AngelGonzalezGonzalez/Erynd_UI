@@ -5,3 +5,11 @@ dist-ssr
 .DS_Store
 *.tsbuildinfo
 .vite
+
+# server
+server/node_modules
+server/dist
+server/.env
+server/**/*.db
+server/**/*.db-journal
+.env.local
